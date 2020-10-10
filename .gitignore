@@ -1,6 +1,5 @@
-node_modules/**/*
+#misc
 .expo/*
-npm-debug.*
 *.jks
 *.p8
 *.p12
@@ -11,3 +10,8 @@ web-build/
 
 # macOS
 .DS_Store
+
+#node
+node_modules/**/*
+package-lock.json
+npm-debug.*
