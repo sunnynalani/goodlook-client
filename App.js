@@ -1,56 +1,41 @@
-import { StatusBar } from 'expo-status-bar'
-import 'react-native-gesture-handler'
-import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
-import { StyleSheet, Text, View, Button } from 'react-native'
+import 'react-native-gesture-handler'
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { createHttpLink } from 'apollo-link-http'
+import { ApolloLink, concat } from 'apollo-link'
+import { StyleSheet } from 'react-native'
+import AppNavigator from './AppNavigator'
 
-const Stack = createStackNavigator()
+const httpLink = createHttpLink({ 
+  uri: 'https://api.blondpony.com/graphql',
+  credentials: 'same-origin',
+})
 
-const DemoHomeScreen = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <Text>Home</Text>
-      <Button
-        style={{ width: '10em'}}
-        onClick={() => {
-          console.log('working')
-          navigation.navigate('SecondHome')
-        }} 
-      >
-        To Home2
-      </Button>
-      <StatusBar style="auto" />
-    </View>
-  )
-}
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  operation.setContext({
+    headers: {
+      authorization: localStorage.getItem('token') || null,
+    }
+  });
 
-const DemoSecondHomeScreen = ({ navigation }) => {
-  console.log(navigation)
-  return (
-    <View style={styles.container}>
-      <Text>Home 2</Text>
-      <Button
-        style={{ width: '10em'}}
-        onClick={() => navigation.navigate('Home')} 
-      >
-        To Home
-      </Button>
-      <StatusBar style="auto" />
-    </View>
-  )
-}
+  return forward(operation)
+})
+
+const client = new ApolloClient({
+  link: concat(authMiddleware, httpLink),
+  cache: new InMemoryCache(),
+})
 
 const App = () => {
-  console.log('testApp')
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={DemoHomeScreen} />
-        <Stack.Screen name="SecondHome" component={DemoSecondHomeScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ApolloProvider client={client}>
+      {/**
+       * this should actually render loginview on start
+       * if cached, go to app navigator
+       */}
+      <AppNavigator />
+    </ApolloProvider>
   )
 }
 
