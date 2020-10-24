@@ -6,34 +6,30 @@ import { ApolloLink, concat } from 'apollo-link'
 import { StyleSheet } from 'react-native'
 import AppNavigator from './AppNavigator'
 
-const httpLink = createHttpLink({ 
-  uri: 'https://api.blondpony.com/graphql',
-  credentials: 'same-origin',
-})
+// const httpLink = createHttpLink({ 
+//   uri: 'https://api.blondpony.com/graphql',
+//   credentials: 'same-origin',
+// })
 
-const authMiddleware = new ApolloLink((operation, forward) => {
-  // add the authorization to the headers
-  operation.setContext({
-    headers: {
-      authorization: localStorage.getItem('token') || null,
-    }
-  });
+// const authMiddleware = new ApolloLink((operation, forward) => {
+//   // add the authorization to the headers
+//   operation.setContext({
+//     headers: {
+//       authorization: localStorage.getItem('token') || null,
+//     }
+//   });
 
-  return forward(operation)
-})
+//   return forward(operation)
+// })
 
 const client = new ApolloClient({
-  link: concat(authMiddleware, httpLink),
+  uri: 'https://api.blondpony.com/graphql',
   cache: new InMemoryCache(),
 })
 
 const App = () => {
   return (
     <ApolloProvider client={client}>
-      {/**
-       * this should actually render loginview on start
-       * if cached, go to app navigator
-       */}
       <AppNavigator />
     </ApolloProvider>
   )

@@ -5,3 +5,14 @@ export const TEST_QUERY = gql`
     test
   }
 `
+
+export const ME = gql`
+  query self {
+    selfClient {
+      id
+    }
+    selfProvider {
+      id
+    }
+  }
+`
