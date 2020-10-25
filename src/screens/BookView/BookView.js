@@ -5,7 +5,6 @@ const BookView = ({}) => {
   return <View>
 
 
-
   </View>
 }
 
