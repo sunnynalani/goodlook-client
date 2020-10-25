@@ -60,9 +60,18 @@
   },
   "lint-staged": {
     "*.js": [
-      "yarn prettier",
+      "prettier --write \"**/*.js\"",
       "git add"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjchung3/goodlook-client.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jjchung3/goodlook-client/issues"
   },
   "private": true
 }
