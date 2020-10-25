@@ -7,7 +7,6 @@ const BookView = ({}) => {
 
 
 
-    
   </View>
 }
 
