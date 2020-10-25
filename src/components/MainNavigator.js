@@ -9,54 +9,55 @@ import NotificationView from '../screens/NotificationView/NotificationView'
 const Tab = createMaterialBottomTabNavigator()
 
 const MainNavigator = () => {
-
   return (
     <Tab.Navigator
-      initialRouteName='Map'
-      activeColor='white' //change later
+      initialRouteName="Map"
+      activeColor="white" //change later
       barStyle={{ backgroundColor: '#1B1B1B' }} //change later
-      tabBarOptions={{
-        //showLabel: false
-      }}
+      tabBarOptions={
+        {
+          //showLabel: false
+        }
+      }
     >
-      <Tab.Screen 
-        name='Map' 
+      <Tab.Screen
+        name="Map"
         component={MapView}
         options={{
           tabBarLabel: 'Search',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name='search' color={color} size={26} />
-          )
+            <FontAwesome name="search" color={color} size={26} />
+          ),
         }}
       />
-      <Tab.Screen 
-        name='Notification' 
+      <Tab.Screen
+        name="Notification"
         component={NotificationView}
         options={{
           tabBarLabel: 'Messages',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name='message' color={color} size={26} />
-          )
+            <MaterialCommunityIcons name="message" color={color} size={26} />
+          ),
         }}
       />
-      <Tab.Screen 
-        name='Profile' 
+      <Tab.Screen
+        name="Profile"
         component={ProfileView}
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name='user' color={color} size={26} />
-          )
+            <FontAwesome name="user" color={color} size={26} />
+          ),
         }}
       />
-      <Tab.Screen 
-        name='Book' 
+      <Tab.Screen
+        name="Book"
         component={BookView}
         options={{
           tabBarLabel: 'Bookings',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name='calendar-o' color={color} size={26} />
-          )
+            <FontAwesome name="calendar-o" color={color} size={26} />
+          ),
         }}
       />
     </Tab.Navigator>
