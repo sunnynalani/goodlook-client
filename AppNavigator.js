@@ -4,11 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { MainNavigator } from './src/components'
 import { useQuery } from '@apollo/react-hooks'
 import { ME } from './queries'
-import { 
-  SignInView,
-  SignUpView,
-  LoginView,
-} from './src/screens/SignInView'
+import { SignInView, SignUpView, LoginView } from './src/screens/SignInView'
 
 const Stack = createStackNavigator()
 
@@ -19,27 +15,14 @@ const StackNavigation = () => {
   return (
     <Stack.Navigator
       initialRouteName={
-        data.selfClient || data.selfProvider ?
-        'Main' : 'SignIn'
+        data.selfClient || data.selfProvider ? 'Main' : 'SignIn'
       }
       headerMode={false}
     >
-      <Stack.Screen
-        name='Main'
-        component={MainNavigator}
-      />
-      <Stack.Screen
-        name='SignIn'
-        component={SignInView}
-      />
-      <Stack.Screen
-        name='SignUp'
-        component={SignUpView}
-      />
-      <Stack.Screen
-        name='Login'
-        component={LoginView}
-      />
+      <Stack.Screen name="Main" component={MainNavigator} />
+      <Stack.Screen name="SignIn" component={SignInView} />
+      <Stack.Screen name="SignUp" component={SignUpView} />
+      <Stack.Screen name="Login" component={LoginView} />
     </Stack.Navigator>
   )
 }

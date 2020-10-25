@@ -6,7 +6,6 @@ import { Text, View, TouchableOpacity } from '../../components'
 import styles from './styles'
 
 const SignInView = ({ navigation }) => {
-
   const toLogin = () => {
     navigation.navigate('Login')
   }
@@ -27,29 +26,23 @@ const SignInView = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.titleTextContainer}>
-       <Text style={styles.titleText}>Good Look</Text>
+        <Text style={styles.titleText}>Good Look</Text>
       </View>
       <View style={styles.subtitleContainer}>
         <View>
           <TouchableOpacity onPress={toLogin}>
-            <Text style={styles.loginText}>
-              Login
-            </Text>
+            <Text style={styles.loginText}>Login</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.rowContainer}>
           <Text style={styles.plainSubtext}> Don't have an account? </Text>
           <TouchableOpacity onPress={toSignUp}>
-            <Text style={styles.signUpText}>
-              Sign up
-            </Text>
+            <Text style={styles.signUpText}>Sign up</Text>
           </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity onPress={asGuest}>
-            <Text style={styles.guestText}>
-              or browse as guest
-            </Text>
+            <Text style={styles.guestText}>or browse as guest</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -57,7 +50,7 @@ const SignInView = ({ navigation }) => {
   )
 }
 
-SignInView.propTypes  = {
+SignInView.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
