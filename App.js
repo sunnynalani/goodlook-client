@@ -6,7 +6,7 @@ import { ApolloLink, concat } from 'apollo-link'
 import { StyleSheet } from 'react-native'
 import AppNavigator from './AppNavigator'
 
-// const httpLink = createHttpLink({ 
+// const httpLink = createHttpLink({
 //   uri: 'https://api.blondpony.com/graphql',
 //   credentials: 'same-origin',
 // })

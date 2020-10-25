@@ -6,8 +6,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "prettier": "prettier --write 'src/**/*.js'",
-    "precommit": "lint-staged"
+    "prettier": "prettier --write \"**/*.js\"",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@apollo/client": "^3.2.5",
@@ -55,14 +55,28 @@
     "eslint-plugin-react": "^7.21.4",
     "eslint-plugin-standard": "^4.0.1",
     "husky": "^4.3.0",
-    "lint-staged": "^10.4.0",
+    "lint-staged": "^10.4.2",
     "prettier": "^2.1.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "*.js": [
-      "prettier --write",
+      "prettier --write \"**/*.js\"",
       "git add"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjchung3/goodlook-client.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jjchung3/goodlook-client/issues"
   },
   "private": true
 }
