@@ -27,6 +27,7 @@ const SignInView = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.titleTextContainer}>
         <Text style={styles.titleText}>Good Look</Text>
+        <View style={styles.lineStyle} />
       </View>
       <View style={styles.subtitleContainer}>
         <View>
