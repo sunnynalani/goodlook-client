@@ -2,7 +2,7 @@ import React from 'react'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import ProfileView from '../screens/ProfileView/ProfileView'
-import MapView from '../screens/MapView/MapView'
+import SearchView from '../screens/SearchView/SearchView'
 import BookView from '../screens/BookView/BookView'
 import NotificationView from '../screens/NotificationView/NotificationView'
 
@@ -11,7 +11,7 @@ const Tab = createMaterialBottomTabNavigator()
 const MainNavigator = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Map"
+      initialRouteName="Search"
       activeColor="white" //change later
       barStyle={{ backgroundColor: '#1B1B1B' }} //change later
       tabBarOptions={
@@ -21,8 +21,8 @@ const MainNavigator = () => {
       }
     >
       <Tab.Screen
-        name="Map"
-        component={MapView}
+        name="Search"
+        component={SearchView}
         options={{
           tabBarLabel: 'Search',
           tabBarIcon: ({ color }) => (

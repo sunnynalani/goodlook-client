@@ -4,7 +4,12 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { MainNavigator } from './src/components'
 import { useQuery } from '@apollo/react-hooks'
 import { ME } from './queries'
-import { SignInView, SignUpView, LoginView } from './src/screens/SignInView'
+import {
+  SignInView,
+  SignUpView,
+  LoginView,
+  ForgotPasswordView,
+} from './src/screens/SignInView'
 
 const Stack = createStackNavigator()
 
@@ -23,6 +28,7 @@ const StackNavigation = () => {
       <Stack.Screen name="SignIn" component={SignInView} />
       <Stack.Screen name="SignUp" component={SignUpView} />
       <Stack.Screen name="Login" component={LoginView} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordView} />
     </Stack.Navigator>
   )
 }

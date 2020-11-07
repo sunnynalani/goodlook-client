@@ -52,6 +52,11 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#000',
   },
+  errorText: {
+    fontSize: normalize(14),
+    textAlign: 'center',
+    color: 'red',
+  },
   lineStyle: {
     borderBottomColor: 'black',
     borderBottomWidth: 2,
