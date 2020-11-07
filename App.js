@@ -1,16 +1,19 @@
 import React from 'react'
 import 'react-native-gesture-handler'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { PaperProvider } from './src/components'
+import { theme } from './config'
 import { createHttpLink } from 'apollo-link-http'
-import { ApolloLink, concat } from 'apollo-link'
+//import { ApolloLink, concat } from 'apollo-link'
 import { StyleSheet } from 'react-native'
 import AppNavigator from './AppNavigator'
 
-// const httpLink = createHttpLink({
-//   uri: 'https://api.blondpony.com/graphql',
-//   credentials: 'same-origin',
-// })
+const httpLink = createHttpLink({
+  uri: 'https://api.blondpony.com/graphql',
+  credentials: 'same-origin',
+})
 
+// not using gqlmiddleware
 // const authMiddleware = new ApolloLink((operation, forward) => {
 //   // add the authorization to the headers
 //   operation.setContext({
@@ -23,14 +26,16 @@ import AppNavigator from './AppNavigator'
 // })
 
 const client = new ApolloClient({
-  uri: 'https://api.blondpony.com/graphql',
+  link: httpLink,
   cache: new InMemoryCache(),
 })
 
 const App = () => {
   return (
     <ApolloProvider client={client}>
-      <AppNavigator />
+      <PaperProvider theme={theme}>
+        <AppNavigator />
+      </PaperProvider>
     </ApolloProvider>
   )
 }
