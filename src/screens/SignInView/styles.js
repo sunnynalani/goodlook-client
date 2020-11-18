@@ -1,10 +1,12 @@
 import { StyleSheet } from 'react-native'
+import { theme } from '../../../config'
 import { normalize } from '../../utils'
+
+const { text, title } = theme.colors
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#linear-gradient(#ece9e6, #ffffff)',
     height: '100%',
     width: '100%',
   },
@@ -22,14 +24,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleText: {
-    color: '#000',
+    color: title,
     fontSize: normalize(48),
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 2,
+    // textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    // textShadowOffset: { width: -1, height: 1 },
+    // textShadowRadius: 1,
   },
   loginText: {
+    color: text,
     textDecorationLine: 'underline',
     fontSize: normalize(24),
     textAlign: 'center',
@@ -37,20 +40,19 @@ export const styles = StyleSheet.create({
   plainSubtext: {
     fontSize: normalize(18),
     textAlign: 'center',
-    color: '#000',
+    color: text,
   },
   signUpText: {
     textDecorationLine: 'underline',
     fontSize: normalize(18),
     textAlign: 'center',
-    textShadowRadius: 1,
-    color: '#000',
+    color: text,
   },
   guestText: {
     textDecorationLine: 'underline',
     fontSize: normalize(14),
     textAlign: 'center',
-    color: '#000',
+    color: text,
   },
   errorText: {
     fontSize: normalize(14),
