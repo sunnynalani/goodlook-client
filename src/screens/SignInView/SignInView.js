@@ -1,8 +1,8 @@
 import React from 'react'
-import AsyncStorage from '@react-native-community/async-storage'
-import { GUEST_KEY } from '../../components/assests/constants'
 import PropTypes from 'prop-types'
 import { Text, View, TouchableOpacity } from '../../components'
+import { LinearGradient } from 'expo-linear-gradient'
+import { asGuest } from '../../utils'
 import styles from './styles'
 
 const SignInView = ({ navigation }) => {
@@ -14,20 +14,20 @@ const SignInView = ({ navigation }) => {
     navigation.navigate('SignUp')
   }
 
-  const asGuest = async () => {
-    try {
-      await AsyncStorage.setItem(GUEST_KEY, '1')
-      navigation.navigate('Main')
-    } catch (error) {
-      console.error('Unexpected Error')
-    }
-  }
-
   return (
     <View style={styles.container}>
+      <LinearGradient
+        colors={['#54b17d', '#54b17d']}
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          height: '100%',
+        }}
+      />
       <View style={styles.titleTextContainer}>
-        <Text style={styles.titleText}>Good Look</Text>
-        <View style={styles.lineStyle} />
+        <Text style={styles.titleText}>good look</Text>
       </View>
       <View style={styles.subtitleContainer}>
         <View>
@@ -42,7 +42,7 @@ const SignInView = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View>
-          <TouchableOpacity onPress={asGuest}>
+          <TouchableOpacity onPress={() => asGuest(navigation)}>
             <Text style={styles.guestText}>or browse as guest</Text>
           </TouchableOpacity>
         </View>

@@ -2,8 +2,12 @@ import gql from 'graphql-tag'
 
 //haven't implemented filter and sort yet...
 export const GET_PROVIDERS = gql`
-  query getProviders {
-    providers {
+  query getProviders(
+    $within: distanceInput
+    $sort: GraphQLSortType
+    $filters: GraphQLFilterType
+  ) {
+    providers(within: $within, sort: $sort, filters: $filters) {
       errors {
         field
         message
@@ -11,6 +15,8 @@ export const GET_PROVIDERS = gql`
       providers {
         id
         name
+        longitude
+        latitude
       }
     }
   }

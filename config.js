@@ -5,7 +5,12 @@ export const theme = {
   roundness: 2,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3498db',
-    accent: '#f1c40f',
+    primary: '#54b17d',
+    accent: '#e1e9f2',
+    background: '#f2f2f8',
+    backdrop: '#efedf2',
+    text: 'white',
+    title: 'white',
+    secondaryText: '#5e5966',
   },
 }

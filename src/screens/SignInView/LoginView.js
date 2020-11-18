@@ -71,7 +71,6 @@ const LoginView = ({ navigation }) => {
           error={errors && isError()}
           style={{ margin: 16 }}
         />
-        {/* <br></br> */}
         <TextInput
           secureTextEntry={true}
           label="Password"
@@ -80,7 +79,6 @@ const LoginView = ({ navigation }) => {
           error={errors && isError()}
           style={{ margin: 16 }}
         />
-        {/* <br></br>   */}
         <View>
           <Button
             mode="contained"

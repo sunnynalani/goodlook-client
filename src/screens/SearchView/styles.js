@@ -3,7 +3,7 @@ import { normalize } from '../../utils'
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#linear-gradient(#ece9e6, #ffffff)',
+    //backgroundColor: '#linear-gradient(#ece9e6, #ffffff)',
     height: '100%',
     width: '100%',
   },
