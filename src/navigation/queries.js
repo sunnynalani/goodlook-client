@@ -1,17 +1,11 @@
 import gql from 'graphql-tag'
 
-export const TEST_QUERY = gql`
-  query tests {
-    test
-  }
-`
-
 export const ME = gql`
   query self {
-    selfClient {
+    meClient {
       id
     }
-    selfProvider {
+    meProvider {
       id
     }
   }

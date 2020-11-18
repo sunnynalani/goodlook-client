@@ -8,12 +8,12 @@ import NotificationView from '../screens/NotificationView/NotificationView'
 
 const Tab = createMaterialBottomTabNavigator()
 
-const MainNavigator = () => {
+export const MainNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName="Search"
       activeColor="white" //change later
-      barStyle={{ backgroundColor: '#1B1B1B' }} //change later
+      barStyle={{ backgroundColor: '#54b17d' }} //change later
       tabBarOptions={
         {
           //showLabel: false
