@@ -22,7 +22,7 @@
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-link": "^1.2.14",
     "apollo-link-http": "^1.5.17",
-    "expo": "~39.0.2",
+    "expo": "^39.0.4",
     "expo-av": "~8.6.0",
     "expo-blur": "~8.2.0",
     "expo-linear-gradient": "~8.3.0",
@@ -47,7 +47,8 @@
     "react-native-tab-view": "^2.15.2",
     "react-native-vector-icons": "^7.1.0",
     "react-native-web": "~0.13.12",
-    "react-navigation-stack": "^2.8.4"
+    "react-navigation-stack": "^2.8.4",
+    "yarn": "^1.22.10"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",

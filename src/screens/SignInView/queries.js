@@ -17,3 +17,20 @@ export const LOGIN_CLIENT = gql`
     }
   }
 `
+export const REGISTER_CLIENT = gql`
+  mutation registerClient($input: UsernamePasswordInput!) {
+    registerClient(input: $UsernamePasswordInput) {
+      errors {
+        field
+        message
+      }
+      client {
+        id
+        username
+        email
+        firstName
+        lastName
+      }
+    }
+  }
+`

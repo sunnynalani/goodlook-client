@@ -1,43 +1,149 @@
-import React from 'react'
-import { Button, TextInput } from 'react-native-paper'
-import { Text, View } from '../../components'
+import React, { useState } from 'react'
+import {
+  Button,
+  TextInput,
+  Text,
+  View,
+  TouchableOpacity,
+} from '../../components'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useMutation } from '@apollo/client'
+import { REGISTER_CLIENT } from './queries'
 import styles from './styles'
 
 /**
  *
  * MAKE SIGN UP VIEW HERE
  */
-
 const SignUpView = ({ navigation }) => {
-  const toProfile = () => {
-    navigation.navigate('Profile')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState(null)
+
+  const isError = (fieldType) => {
+    if (
+      (fieldType === 'firstName' &&
+        errors.find((error) => {
+          error.field === 'firstName'
+        })) ||
+      (fieldType === 'lastName' &&
+        errors.find((error) => {
+          error.field === 'lastName'
+        })) ||
+      (fieldType === 'username' &&
+        errors.find((error) => {
+          error.field === 'username'
+        })) ||
+      (fieldType === 'email' &&
+        errors.find((error) => {
+          error.field === 'email'
+        })) ||
+      (fieldType === 'password' &&
+        errors.find((error) => {
+          error.field === 'password'
+        }))
+    )
+      return true
+    return false
   }
+
+  const [register] = useMutation(REGISTER_CLIENT, {
+    variables: {
+      //input: UsernamePasswordInput,
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      email: email,
+      password: password,
+    },
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (data) => {
+      if (data.loginClient.errors) setErrors(data.loginClient.errors)
+      navigation.navigate('Main')
+    },
+  })
+
+  const signUpButton = () => {
+    navigation.navigate('Sign Up!')
+  }
+
   return (
-    <View styles={styles.container}>
-      <View styles={styles.titleTextContainer}>
-        <TextInput label="First Name" style={{ margin: 16 }} />
-        <TextInput label="Last Name" style={{ margin: 16 }} />
-        <TextInput label="Email" style={{ margin: 16 }} />
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#54b17d', '#54b17d']}
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          height: '100%',
+        }}
+      />
+      <View style={styles.titleTextContainer}>
+        <Text style={styles.titleText}>Sign Up</Text>
+        {/* <br></br> */}
+        {errors &&
+          errors.map((error, index) => (
+            <Text key={index} style={styles.errorText}>
+              {error.message}
+            </Text>
+          ))}
+        <TextInput
+          label="First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+          error={errors && isError()}
+          style={{ margin: 16 }}
+        />
+        {/* <br></br> */}
+        <TextInput
+          label="Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+          error={errors && isError()}
+          style={{ margin: 16 }}
+        />
+        {/* <br></br> */}
+        <TextInput
+          label="Username"
+          value={username}
+          onChangeText={setUsername}
+          error={errors && isError()}
+          style={{ margin: 16 }}
+        />
+        {/* <br></br> */}
+        <TextInput
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          error={errors && isError()}
+          style={{ margin: 16 }}
+        />
+        {/* <br></br> */}
         <TextInput
           secureTextEntry={true}
           label="Password"
+          value={password}
+          onChangeText={setPassword}
+          error={errors && isError()}
           style={{ margin: 16 }}
         />
-        <TextInput
-          secureTextEntry={true}
-          label="Confirm Password"
-          style={{ margin: 16 }}
-        />
+        {/* <br></br>   */}
         <View>
           <Button
             mode="contained"
-            onPress={toProfile}
-            accessibilityLabel="Sign Up button"
+            onPress={register}
+            accessibilityLabel="Sign Up Button"
             theme={{ roundness: 10 }}
             style={{ width: 150, margin: 16 }}
           >
             <View>
-              <Text style={styles.lgText}>Sign Up</Text>
+              <Text style={{ color: 'black' }}>Sign Up</Text>
             </View>
           </Button>
         </View>
