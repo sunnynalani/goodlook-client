@@ -9,6 +9,11 @@ import {
   Appbar,
   Searchbar,
   IconButton,
+  Portal,
+  Modal,
+  Dialog,
+  Paragraph,
+  Checkbox,
 } from '../../components'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import { useQuery, useLazyQuery } from '@apollo/client'
@@ -20,6 +25,20 @@ import * as Location from 'expo-location'
 import styles from './styles'
 import MapViewContainer from './MapView'
 import ListView from './ListView'
+import Slider from '@react-native-community/slider'
+
+const CHECKBOX_INITIAL_STATE = {
+  licensed: { name: 'Licensed', value: 'unchecked' },
+  bike_parking: { name: 'Bike Parking', value: 'unchecked' },
+  accepts_bitcoin: { name: 'Accepts Bitcoin', value: 'unchecked' },
+  accepts_credit_cards: { name: 'Accepts CreditCard', value: 'unchecked' },
+  garage_parking: { name: 'Garage Parking', value: 'unchecked' },
+  street_parking: { name: 'Street Parking', value: 'unchecked' },
+  dogs_allowed: { name: 'Dogs Allowed', value: 'unchecked' },
+  wheelchair_accessible: { name: 'Wheelchair Accessible', value: 'unchecked' },
+  valet_parking: { name: 'Valet Parking', value: 'unchecked' },
+  flexible_timing: { name: 'Flexible Timing', value: 'unchecked' },
+}
 
 const SearchView = ({ navigation }) => {
   const [viewState, setViewState] = useState(0) //terrible way to do this
@@ -28,11 +47,22 @@ const SearchView = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState(null)
   const [providerData, setProviderData] = useState(null)
-  const [getData, { loading, data }] = useLazyQuery(GET_PROVIDERS, {
+  const [checkBoxes, setCheckBoxes] = useState(CHECKBOX_INITIAL_STATE)
+  const [distance, setDistance] = useState(5)
+  const [rating, setRating] = useState(0)
+  const [modal, setModal] = useState({
+    visible: false,
+    sortVisible: false,
+  })
+
+  const [getData] = useLazyQuery(GET_PROVIDERS, {
     variables: searchInput,
     fetchPolicy: 'network-only',
     onError: (err) => console.log(err.message),
-    onCompleted: (res) => setProviderData(res.providers),
+    onCompleted: (res) => {
+      console.log(res)
+      setProviderData(res.providers)
+    },
   })
 
   useEffect(() => {
@@ -62,14 +92,76 @@ const SearchView = ({ navigation }) => {
     })()
   }, [])
 
-  const onChangeSearch = (query) => setSearchQuery(query)
+  const closeModal = (_) => {
+    setCheckBoxes(CHECKBOX_INITIAL_STATE)
+    setDistance(5)
+    setModal({ visible: false, sortVisible: false })
+  }
+
+  const closeSortModal = (_) => {
+    setModal({ visible: false, sortVisible: false })
+  }
+
+  const openModal = (_) => {
+    setModal({ visible: true, sortVisible: false })
+  }
+
+  const openSortModal = (_) => {
+    setModal({ visible: false, sortVisible: true })
+  }
+
+  const onChangeSearch = (query) => {
+    setSearchQuery(query)
+    setSearchInput({
+      ...searchInput,
+      filters: {
+        OR: [
+          {
+            name: {
+              like: query + '%',
+            },
+          },
+          {
+            country: {
+              eq: query,
+            },
+          },
+          {
+            state: {
+              eq: query,
+            },
+          },
+          {
+            city: {
+              eq: query,
+            },
+          },
+          {
+            street: {
+              like: query + '%',
+            },
+          },
+          {
+            zipcode: {
+              eq: query,
+            },
+          },
+        ],
+      },
+    })
+  }
+
+  const onConfirmSearch = (_) => {
+    getData()
+  }
 
   return (
     <View style={styles.container}>
-      <View style={{ height: 130, backgroundColor: '#54b17d' }}>
+      <View style={{ height: 134, backgroundColor: '#54b17d' }}>
         <Searchbar
           placeholder={'Search'}
           onChangeText={onChangeSearch}
+          //onIconPress={onConfirmSearch}
           value={searchQuery}
           iconColor={'#54b17d'}
           style={{
@@ -77,7 +169,7 @@ const SearchView = ({ navigation }) => {
             width: '95%',
             alignSelf: 'center',
             height: 40,
-            //borderRadius: 20,
+            textColor: 'black',
           }}
         />
         <View
@@ -92,39 +184,115 @@ const SearchView = ({ navigation }) => {
           <Button
             mode="outlined"
             style={{
-              width: '30%',
-              marginRight: 10,
+              width: 50,
               backgroundColor: '#fafafa',
               borderColor: '#ececec',
             }}
             onPress={() => setViewState(1)}
           >
-            Map
+            <FontAwesome name="globe" size={22} />
           </Button>
           <Button
             mode="outlined"
             style={{
-              width: '30%',
+              width: 50,
+              marginLeft: 'auto',
+              marginLeft: 'auto',
               backgroundColor: '#fafafa',
               borderColor: '#ececec',
             }}
             onPress={() => setViewState(0)}
           >
-            List
+            <FontAwesome name="list" size={22} />
           </Button>
           <Button
             mode="outlined"
             style={{
+              width: 50,
               marginLeft: 'auto',
+              marginRight: 'auto',
               backgroundColor: '#fafafa',
               borderColor: '#ececec',
             }}
-            onPress={() => console.log('Pressed')}
+            onPress={openSortModal}
           >
-            <FontAwesome name="list" size={18} />
+            <FontAwesome name="sort" size={22} />
+          </Button>
+          <Button
+            mode="outlined"
+            style={{
+              width: 50,
+              backgroundColor: '#fafafa',
+              borderColor: '#ececec',
+            }}
+            onPress={openModal}
+          >
+            <FontAwesome name="filter" size={22} />
           </Button>
         </View>
       </View>
+      <Portal>
+        <Dialog visible={modal.visible} onDismiss={closeModal}>
+          <Dialog.Content>
+            <View>
+              <Paragraph>Rating: {rating}</Paragraph>
+              <Slider
+                style={{ width: '100%', height: 40 }}
+                step={1}
+                minimumValue={0}
+                maximumValue={5}
+                minimumTrackTintColor="#54b17d"
+                maximumTrackTintColor="#54b17d"
+                value={rating}
+                onValueChange={(v) => setRating(v)}
+              />
+            </View>
+            <View>
+              <Paragraph>Distance within: {distance} miles</Paragraph>
+              <Slider
+                style={{ width: '100%', height: 40 }}
+                step={5}
+                minimumValue={0}
+                maximumValue={30}
+                minimumTrackTintColor="#54b17d"
+                maximumTrackTintColor="#54b17d"
+                value={distance}
+                onValueChange={(v) => setDistance(v)}
+              />
+            </View>
+            {Object.keys(checkBoxes).map((key, index) => {
+              return (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Checkbox
+                    key={index}
+                    status={checkBoxes[key].value}
+                    onPress={() => {
+                      checkBoxes[key].value === 'unchecked'
+                        ? (checkBoxes[key].value = 'checked')
+                        : (checkBoxes[key].value = 'unchecked')
+                      setCheckBoxes({ ...checkBoxes })
+                    }}
+                  />
+                  <Paragraph>{checkBoxes[key].name}</Paragraph>
+                </View>
+              )
+            })}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={closeModal}>Cancel</Button>
+            <Button onPress={closeModal}>Apply</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      <Portal>
+        <Dialog visible={modal.sortVisible} onDismiss={closeSortModal}>
+          <Dialog.Content></Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={closeSortModal}>Cancel</Button>
+            <Button onPress={closeSortModal}>Apply</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       {viewState ? (
         <MapViewContainer
           navigation={navigation}
@@ -132,7 +300,7 @@ const SearchView = ({ navigation }) => {
           providerData={providerData}
         />
       ) : (
-        <ListView navigation={navigation} />
+        <ListView navigation={navigation} providerData={providerData} />
       )}
       {lockOverlay && (
         <BlurView intensity={100} style={StyleSheet.absoluteFill}></BlurView>

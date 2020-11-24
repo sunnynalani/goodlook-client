@@ -17,6 +17,8 @@ export const GET_PROVIDERS = gql`
         name
         longitude
         latitude
+        average_rating
+        licensed
       }
     }
   }
