@@ -34,3 +34,25 @@ export const REGISTER_CLIENT = gql`
     }
   }
 `
+
+export const REGISTER_PROVIDER = gql`
+  mutation registerProvider(
+    $providerInput: ProviderInput
+    $attributesInput: AttributesInput
+    $input: UsernamePasswordInput!
+  ) {
+    registerProvider(
+      providerInput: $providerInput
+      attributesInput: $attributesInput
+      input: $input
+    ) {
+      errors {
+        field
+        message
+      }
+      provider {
+        id
+      }
+    }
+  }
+`

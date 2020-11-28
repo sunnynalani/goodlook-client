@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
+import { CommonActions } from '@react-navigation/native'
 import ProfileView from '../screens/ProfileView/ProfileView'
 import SearchView from '../screens/SearchView/SearchView'
 import BookView from '../screens/BookView/BookView'
@@ -13,7 +14,7 @@ export const MainNavigator = () => {
     <Tab.Navigator
       initialRouteName="Search"
       activeColor="white" //change later
-      barStyle={{ backgroundColor: '#54b17d' }} //change later
+      barStyle={{ backgroundColor: 'black' }} //change later
       tabBarOptions={
         {
           //showLabel: false
