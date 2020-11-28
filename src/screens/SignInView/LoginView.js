@@ -1,35 +1,129 @@
 import React, { useState } from 'react'
 import {
-  Button,
+  KeyboardAvoidingView,
+  Pressable,
   TextInput,
-  Text,
-  View,
+  Platform,
   TouchableOpacity,
-} from '../../components'
+} from 'react-native'
 import { useMutation } from '@apollo/client'
 import { LOGIN_CLIENT } from './queries'
-import styles from './styles'
+import styled from 'styled-components/native'
+
+const Body = styled.View`
+  align-items: center;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+  width: 100%;
+`
+
+const TitleContainer = styled.View`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 15%;
+`
+
+const Title = styled.Text`
+  color: black;
+  height: auto;
+  margin-top: 10%;
+  marginleft: 10%;
+  letter-spacing: -0.54px;
+  font-size: 36px;
+  font-family: Comfortaa_500Medium;
+`
+
+const InputContainer = styled.View`
+  background-color: white;
+  height: auto;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 40%;
+`
+
+const ErrorText = styled.Text`
+  color: red;
+  height: auto;
+  font-size: 12px;
+  font-family: Comfortaa_500Medium;
+  margin-bottom: 20px;
+`
+
+const Input = styled.TextInput`
+  border: 2px solid black;
+  color: black;
+  height: 52px;
+  width: 90%;
+  text-align: left;
+  font-size: 15px;
+  margin-bottom: 16px;
+  font-family: Comfortaa_500Medium;
+  padding: 15px;
+`
+
+const ButtonContainer = styled.View`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+const MainButton = styled.Pressable`
+  background-color: black;
+  height: 52px;
+  border-radius: 6px;
+  margin-top: 30px;
+  margin-bottom: 5%;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+`
+
+const MainText = styled.Text`
+  text-align: center;
+  color: white;
+  width: 100px;
+  margin-bottom: 6px;
+  text-align: center;
+  font-size: 18px;
+  font-family: Comfortaa_500Medium;
+`
+
+const ForgetPWButton = styled.TouchableOpacity`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+`
+
+const ForgetPWText = styled.Text`
+  color: black;
+  width: 90%;
+  text-align: center;
+  font-size: 15px;
+  font-family: Comfortaa_500Medium;
+  text-decoration: underline;
+`
 
 const LoginView = ({ navigation }) => {
   const [usernameOrEmail, setUsernameOrEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState(null)
+  const [error, setError] = useState(false)
 
-  //Need to add theme to app for this to work...
-  const isError = (fieldType) => {
-    if (
-      (fieldType === 'usernameOrEmail' &&
-        errors.find((error) => {
-          error.field === 'username' || error.field === 'email'
-        })) ||
-      (fieldType === 'password' &&
-        errors.find((error) => {
-          e
-          rror.field === 'password'
-        }))
+  const toMain = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [{ name: 'SignIn' }, { name: 'Main' }],
+      })
     )
-      return true
-    return false
   }
 
   //express-session broken atm...
@@ -39,68 +133,49 @@ const LoginView = ({ navigation }) => {
       password: password,
     },
     onError: (err) => {
-      console.log(err.message)
+      setError(true)
     },
     onCompleted: (data) => {
-      if (data.loginClient.errors) setErrors(data.loginClient.errors)
-      navigation.navigate('Main')
+      if (data.loginClient.errors) setError(true)
+      toMain()
     },
   })
 
-  const logInButton = () => {
-    navigation.navigate('Log In')
-  }
-
   const toForgotPswd = () => {
-    navigation.navigate('ForgotPassword')
+    console.log('fgort')
+    //navigation.navigate('ForgotPassword')
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.titleTextContainer}>
-        {errors &&
-          errors.map((error, index) => (
-            <Text key={index} style={styles.errorText}>
-              {error.message}
-            </Text>
-          ))}
-        <TextInput
-          label="Username or Email"
+    <Body>
+      <TitleContainer>
+        <Title>login</Title>
+      </TitleContainer>
+      {error && <ErrorText>invalid credentials</ErrorText>}
+      <InputContainer>
+        <Input
+          placeholder={'username or email'}
+          onChangeText={(usernameOrEmail) =>
+            setUsernameOrEmail(usernameOrEmail)
+          }
           value={usernameOrEmail}
-          onChangeText={setUsernameOrEmail}
-          error={errors && isError()}
-          style={{ margin: 16 }}
-        />
-        <TextInput
-          secureTextEntry={true}
-          label="Password"
+        ></Input>
+        <Input
+          placeholder={'password'}
+          onChangeText={(password) => setPassword(password)}
           value={password}
-          onChangeText={setPassword}
-          error={errors && isError()}
-          style={{ margin: 16 }}
-        />
-        <View>
-          <Button
-            mode="contained"
-            onPress={login}
-            accessibilityLabel="Log In button"
-            theme={{ roundness: 10 }}
-            style={{ width: 150, margin: 16 }}
-          >
-            <View>
-              <Text style={styles.lgText}>Log In</Text>
-            </View>
-          </Button>
-        </View>
-      </View>
-      <View style={styles.subtitleContainer}>
-        <View>
-          <TouchableOpacity onPress={toForgotPswd}>
-            <Text style={styles.guestText}>Forgot Password?</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+          secureTextEntry
+        ></Input>
+      </InputContainer>
+      <ButtonContainer>
+        <MainButton android_ripple={{ color: 'white' }} onPress={login}>
+          <MainText>log in</MainText>
+        </MainButton>
+      </ButtonContainer>
+      <ForgetPWButton onPress={toForgotPswd}>
+        <ForgetPWText>Forget Password?</ForgetPWText>
+      </ForgetPWButton>
+    </Body>
   )
 }
 

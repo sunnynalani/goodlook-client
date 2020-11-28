@@ -5,11 +5,11 @@ export const theme = {
   roundness: 2,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#54b17d',
-    accent: '#e1e9f2',
-    background: '#f2f2f8',
-    text: 'black',
-    title: 'white',
-    secondaryText: '#5e5966',
+    // primary: '#54b17d',
+    // accent: '#e1e9f2',
+    // background: '#f2f2f8',
+    // text: 'black',
+    // title: 'white',
+    // secondaryText: '#5e5966',
   },
 }

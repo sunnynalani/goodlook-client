@@ -6,9 +6,15 @@ import { useQuery } from '@apollo/react-hooks'
 import { ME } from './queries'
 import {
   SignInView,
-  SignUpView,
+  UserForkView,
   LoginView,
   ForgotPasswordView,
+  ClientSignUpView,
+  ProviderSignUpView,
+  CategoryView,
+  AttributesView,
+  AddressView,
+  ProviderFinalView,
 } from '../screens/SignInView'
 import { asClient, asProvider } from '../utils'
 
@@ -29,12 +35,19 @@ const StackNavigation = () => {
   }
 
   return (
-    <Stack.Navigator initialRouteName={initialRoute} headerMode={false}>
+    // <Stack.Navigator initialRouteName={initialRoute} headerMode={false}>
+    <Stack.Navigator initialRouteName={'SignIn'} headerMode={false}>
       <Stack.Screen name="Main" component={MainNavigator} />
       <Stack.Screen name="SignIn" component={SignInView} />
-      <Stack.Screen name="SignUp" component={SignUpView} />
+      <Stack.Screen name="UserFork" component={UserForkView} />
       <Stack.Screen name="Login" component={LoginView} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordView} />
+      <Stack.Screen name="ClientSignUp" component={ClientSignUpView} />
+      <Stack.Screen name="ProviderSignUp" component={ProviderSignUpView} />
+      <Stack.Screen name="Category" component={CategoryView} />
+      <Stack.Screen name="Attributes" component={AttributesView} />
+      <Stack.Screen name="Address" component={AddressView} />
+      <Stack.Screen name="ProviderFinal" component={ProviderFinalView} />
     </Stack.Navigator>
   )
 }

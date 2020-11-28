@@ -157,13 +157,13 @@ const SearchView = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ height: 134, backgroundColor: '#54b17d' }}>
+      <View style={{ height: 134, backgroundColor: 'white' }}>
         <Searchbar
           placeholder={'Search'}
           onChangeText={onChangeSearch}
           //onIconPress={onConfirmSearch}
           value={searchQuery}
-          iconColor={'#54b17d'}
+          iconColor={'black'}
           style={{
             marginTop: 32,
             width: '95%',
@@ -190,7 +190,7 @@ const SearchView = ({ navigation }) => {
             }}
             onPress={() => setViewState(1)}
           >
-            <FontAwesome name="globe" size={22} />
+            <FontAwesome name="globe" size={22} color={'black'} />
           </Button>
           <Button
             mode="outlined"
@@ -203,7 +203,7 @@ const SearchView = ({ navigation }) => {
             }}
             onPress={() => setViewState(0)}
           >
-            <FontAwesome name="list" size={22} />
+            <FontAwesome name="list" size={22} color={'black'} />
           </Button>
           <Button
             mode="outlined"
@@ -216,7 +216,7 @@ const SearchView = ({ navigation }) => {
             }}
             onPress={openSortModal}
           >
-            <FontAwesome name="sort" size={22} />
+            <FontAwesome name="sort" size={22} color={'black'} />
           </Button>
           <Button
             mode="outlined"
@@ -227,7 +227,7 @@ const SearchView = ({ navigation }) => {
             }}
             onPress={openModal}
           >
-            <FontAwesome name="filter" size={22} />
+            <FontAwesome name="filter" size={22} color={'black'} />
           </Button>
         </View>
       </View>
@@ -241,8 +241,8 @@ const SearchView = ({ navigation }) => {
                 step={1}
                 minimumValue={0}
                 maximumValue={5}
-                minimumTrackTintColor="#54b17d"
-                maximumTrackTintColor="#54b17d"
+                minimumTrackTintColor="gray"
+                maximumTrackTintColor="gray"
                 value={rating}
                 onValueChange={(v) => setRating(v)}
               />
@@ -254,15 +254,18 @@ const SearchView = ({ navigation }) => {
                 step={5}
                 minimumValue={0}
                 maximumValue={30}
-                minimumTrackTintColor="#54b17d"
-                maximumTrackTintColor="#54b17d"
+                minimumTrackTintColor="gray"
+                maximumTrackTintColor="gray"
                 value={distance}
                 onValueChange={(v) => setDistance(v)}
               />
             </View>
             {Object.keys(checkBoxes).map((key, index) => {
               return (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View
+                  key={index}
+                  style={{ flexDirection: 'row', alignItems: 'center' }}
+                >
                   <Checkbox
                     key={index}
                     status={checkBoxes[key].value}
