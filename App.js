@@ -16,6 +16,11 @@ import {
   Comfortaa_700Bold,
 } from '@expo-google-fonts/comfortaa'
 
+/**
+ * much of the styling for this app is poorly done
+ * needs refactoring later
+ */
+
 const httpLink = createHttpLink({
   uri: 'https://api.blondpony.com/graphql',
   credentials: 'same-origin',

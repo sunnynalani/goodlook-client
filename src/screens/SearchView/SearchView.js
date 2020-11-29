@@ -1,20 +1,4 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import {
-  Text,
-  View,
-  ScrollView,
-  Button,
-  Banner,
-  ProgressBar,
-  Appbar,
-  Searchbar,
-  IconButton,
-  Portal,
-  Modal,
-  Dialog,
-  Paragraph,
-  Checkbox,
-} from '../../components'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import { useQuery, useLazyQuery } from '@apollo/client'
 import { GET_PROVIDERS } from './queries'
@@ -26,6 +10,153 @@ import styles from './styles'
 import MapViewContainer from './MapView'
 import ListView from './ListView'
 import Slider from '@react-native-community/slider'
+import styled from 'styled-components/native'
+import { Text, View } from '../../components'
+import { Pressable, TextInput, Platform, TouchableOpacity } from 'react-native'
+
+const Body = styled.View`
+  align-items: center;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+  width: 100%;
+`
+
+const Tab = styled.View`
+  background-color: white;
+  height: 125px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  shadow-color: black;
+  shadow-opacity: 0.8;
+  elevation: 2;
+`
+
+const Title = styled.Text`
+  color: black;
+  height: auto;
+  margin-top: 10%;
+  margin-left: 10%;
+  letter-spacing: -0.54px;
+  font-size: 36px;
+  font-family: Comfortaa_500Medium;
+`
+const ErrorText = styled.Text`
+  color: red;
+  height: auto;
+  font-size: 12px;
+  font-family: Comfortaa_500Medium;
+  margin-bottom: 20px;
+`
+
+const InputContainer = styled.View`
+  background-color: white;
+  height: 52px;
+  width: 90%;
+  border: 2px solid black;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  padding-left: 15px;
+  padding-right: 15px;
+  shadow-color: black;
+  shadow-opacity: 0.8;
+  elevation: 2;
+`
+
+const Input = styled.TextInput`
+  color: black;
+  height: 52px;
+  width: ${Dimensions.get('window').width * 0.65}px;
+  text-align: left;
+  font-size: 15px;
+  font-family: Comfortaa_500Medium;
+`
+
+const TabButtonContainer = styled.View`
+  background-color: white;
+  height: auto;
+  flex-direction: row;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  width: 90%;
+`
+
+const TabButton = styled.Pressable`
+  background-color: black;
+  height: 20px;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  width: 20%;
+  ${({ mr }) => mr && `margin-right: 16px;`}
+`
+
+const TabButtonText = styled.Text`
+  text-align: center;
+  color: white;
+  width: 100px;
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-family: Comfortaa_500Medium;
+`
+
+const ButtonContainer = styled.View`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+const MainButton = styled.Pressable`
+  background-color: black;
+  height: 52px;
+  border-radius: 6px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+`
+
+const MainText = styled.Text`
+  text-align: center;
+  color: white;
+  width: 100px;
+  text-align: center;
+  font-size: 18px;
+  font-family: Comfortaa_500Medium;
+`
+
+const TermsContainer = styled.View`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+const Terms = styled.Text`
+  color: black;
+  margin-left: 5%;
+  width: 95%;
+  font-size: 13px;
+  font-family: Comfortaa_500Medium;
+`
+
+const IconButton = styled.TouchableOpacity`
+  background-color: transparent;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+`
 
 const CHECKBOX_INITIAL_STATE = {
   licensed: { name: 'Licensed', value: 'unchecked' },
@@ -41,7 +172,7 @@ const CHECKBOX_INITIAL_STATE = {
 }
 
 const SearchView = ({ navigation }) => {
-  const [viewState, setViewState] = useState(0) //terrible way to do this
+  const [viewState, setViewState] = useState(false) //terrible way to do this
   const [location, setLocation] = useState(null)
   const [lockOverlay, setLockOverlay] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -60,7 +191,6 @@ const SearchView = ({ navigation }) => {
     fetchPolicy: 'network-only',
     onError: (err) => console.log(err.message),
     onCompleted: (res) => {
-      console.log(res)
       setProviderData(res.providers)
     },
   })
@@ -156,146 +286,53 @@ const SearchView = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={{ height: 134, backgroundColor: 'white' }}>
-        <Searchbar
-          placeholder={'Search'}
-          onChangeText={onChangeSearch}
-          //onIconPress={onConfirmSearch}
-          value={searchQuery}
-          iconColor={'black'}
-          style={{
-            marginTop: 32,
-            width: '95%',
-            alignSelf: 'center',
-            height: 40,
-            textColor: 'black',
-          }}
-        />
-        <View
-          style={{
-            marginTop: 10,
-            width: '95%',
-            alignContent: 'space-between',
-            alignSelf: 'center',
-            flexDirection: 'row',
-          }}
-        >
-          <Button
-            mode="outlined"
-            style={{
-              width: 50,
-              backgroundColor: '#fafafa',
-              borderColor: '#ececec',
-            }}
-            onPress={() => setViewState(1)}
+    <Body>
+      <Tab>
+        <InputContainer>
+          <IconButton onPress={() => console.log('search')}>
+            <FontAwesome
+              name="search"
+              size={Dimensions.get('window').width * 0.06}
+              color={'black'}
+              style={{
+                paddingLeft: '4%',
+                paddingRight: '4%',
+              }}
+            />
+          </IconButton>
+          <Input placeholder={'search'} />
+          <IconButton onPress={() => setViewState(!viewState)}>
+            <FontAwesome
+              name={viewState ? 'list' : 'globe'}
+              size={
+                viewState
+                  ? Dimensions.get('window').width * 0.06
+                  : Dimensions.get('window').width * 0.07
+              }
+              color={'black'}
+              style={{
+                paddingLeft: '4%',
+                paddingRight: '4%',
+              }}
+            />
+          </IconButton>
+        </InputContainer>
+        <TabButtonContainer>
+          <TabButton
+            mr
+            android_ripple={{ color: 'white' }}
+            onPress={() => console.log('filter')}
           >
-            <FontAwesome name="globe" size={22} color={'black'} />
-          </Button>
-          <Button
-            mode="outlined"
-            style={{
-              width: 50,
-              marginLeft: 'auto',
-              marginLeft: 'auto',
-              backgroundColor: '#fafafa',
-              borderColor: '#ececec',
-            }}
-            onPress={() => setViewState(0)}
+            <TabButtonText>filter</TabButtonText>
+          </TabButton>
+          <TabButton
+            android_ripple={{ color: 'white' }}
+            onPress={() => console.log('sort')}
           >
-            <FontAwesome name="list" size={22} color={'black'} />
-          </Button>
-          <Button
-            mode="outlined"
-            style={{
-              width: 50,
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              backgroundColor: '#fafafa',
-              borderColor: '#ececec',
-            }}
-            onPress={openSortModal}
-          >
-            <FontAwesome name="sort" size={22} color={'black'} />
-          </Button>
-          <Button
-            mode="outlined"
-            style={{
-              width: 50,
-              backgroundColor: '#fafafa',
-              borderColor: '#ececec',
-            }}
-            onPress={openModal}
-          >
-            <FontAwesome name="filter" size={22} color={'black'} />
-          </Button>
-        </View>
-      </View>
-      <Portal>
-        <Dialog visible={modal.visible} onDismiss={closeModal}>
-          <Dialog.Content>
-            <View>
-              <Paragraph>Rating: {rating}</Paragraph>
-              <Slider
-                style={{ width: '100%', height: 40 }}
-                step={1}
-                minimumValue={0}
-                maximumValue={5}
-                minimumTrackTintColor="gray"
-                maximumTrackTintColor="gray"
-                value={rating}
-                onValueChange={(v) => setRating(v)}
-              />
-            </View>
-            <View>
-              <Paragraph>Distance within: {distance} miles</Paragraph>
-              <Slider
-                style={{ width: '100%', height: 40 }}
-                step={5}
-                minimumValue={0}
-                maximumValue={30}
-                minimumTrackTintColor="gray"
-                maximumTrackTintColor="gray"
-                value={distance}
-                onValueChange={(v) => setDistance(v)}
-              />
-            </View>
-            {Object.keys(checkBoxes).map((key, index) => {
-              return (
-                <View
-                  key={index}
-                  style={{ flexDirection: 'row', alignItems: 'center' }}
-                >
-                  <Checkbox
-                    key={index}
-                    status={checkBoxes[key].value}
-                    onPress={() => {
-                      checkBoxes[key].value === 'unchecked'
-                        ? (checkBoxes[key].value = 'checked')
-                        : (checkBoxes[key].value = 'unchecked')
-                      setCheckBoxes({ ...checkBoxes })
-                    }}
-                  />
-                  <Paragraph>{checkBoxes[key].name}</Paragraph>
-                </View>
-              )
-            })}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={closeModal}>Cancel</Button>
-            <Button onPress={closeModal}>Apply</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-      <Portal>
-        <Dialog visible={modal.sortVisible} onDismiss={closeSortModal}>
-          <Dialog.Content></Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={closeSortModal}>Cancel</Button>
-            <Button onPress={closeSortModal}>Apply</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+            <TabButtonText>sort</TabButtonText>
+          </TabButton>
+        </TabButtonContainer>
+      </Tab>
       {viewState ? (
         <MapViewContainer
           navigation={navigation}
@@ -305,10 +342,18 @@ const SearchView = ({ navigation }) => {
       ) : (
         <ListView navigation={navigation} providerData={providerData} />
       )}
-      {lockOverlay && (
-        <BlurView intensity={100} style={StyleSheet.absoluteFill}></BlurView>
-      )}
-    </View>
+      {/* <ButtonContainer>
+        <MainButton android_ripple={{ color: 'white' }}>
+          <MainText>sign up</MainText>
+        </MainButton>
+      </ButtonContainer>
+      <TermsContainer>
+        <Terms>
+          By signing up, you agree to goodlook's Terms of Service and Privacy
+          Policy
+        </Terms>
+      </TermsContainer> */}
+    </Body>
   )
 }
 

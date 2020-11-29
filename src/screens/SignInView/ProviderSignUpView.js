@@ -27,7 +27,7 @@ const TitleContainer = styled.View`
 const Title = styled.Text`
   color: black;
   height: auto;
-  marginleft: 10%;
+  margin-left: 10%;
   letter-spacing: -0.54px;
   font-size: 36px;
   font-family: Comfortaa_500Medium;
