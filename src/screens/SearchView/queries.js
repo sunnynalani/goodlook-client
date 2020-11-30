@@ -19,6 +19,9 @@ export const GET_PROVIDERS = gql`
         latitude
         average_rating
         licensed
+        city
+        state
+        categories
       }
     }
   }

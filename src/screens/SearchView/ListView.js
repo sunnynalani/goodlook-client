@@ -1,29 +1,160 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import {
-  Text,
-  ScrollView,
-  Button,
-  Banner,
-  ProgressBar,
-  Appbar,
-  Searchbar,
-  IconButton,
-  Card,
-  Title,
-  Paragraph,
-  Avatar,
-  View,
-  Caption,
-} from '../../components'
+import { ScrollView } from '../../components'
+import { View, Text, Pressable, TextInput, Platform } from 'react-native'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import { useQuery, useLazyQuery } from '@apollo/client'
 import SearchTable from './SearchTable'
 import { Dimensions } from 'react-native'
 import { BlurView } from 'expo-blur'
 import styles from './styles'
-import { bgImages, avatarImages } from '../../utils'
+import { bgImages, avatarImages, distance } from '../../utils'
+import styled from 'styled-components/native'
 
-const ListView = ({ navigation, providerData }) => {
+const Body = styled.ScrollView`
+  background-color: white;
+  height: auto;
+  width: 100%;
+`
+
+const TitleContainer = styled.View`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 5%;
+`
+
+const Title = styled.Text`
+  color: black;
+  height: auto;
+  margin-top: 15%;
+  margin-left: 10%;
+  letter-spacing: -0.54px;
+  font-size: 36px;
+  font-family: Comfortaa_500Medium;
+`
+const ErrorText = styled.Text`
+  color: red;
+  height: auto;
+  font-size: 12px;
+  font-family: Comfortaa_500Medium;
+  margin-bottom: 20px;
+`
+
+const CardContainer = styled.Pressable`
+  background-color: white;
+  height: 85px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-direction: row;
+  border-bottom-width: 0.5px;
+  border-bottom-color: #d3d3d3;
+`
+
+const Avatar = styled.Image`
+  background-color: transparent;
+  height: 56px;
+  width: 56px;
+  border-radius: 28px;
+`
+
+const InnerContainer = styled.View`
+  background-color: transparent;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  width: 20%;
+`
+
+const InnerMiddleContainer = styled.View`
+  background-color: transparent;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  width: 31.5%;
+`
+
+const InnerEndContainer = styled.View`
+  background-color: transparent;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  width: 17%;
+`
+
+const DistanceText = styled.Text`
+  text-align: center;
+  color: black;
+  width: auto;
+  font-size: 18px;
+  font-family: Comfortaa_500Medium;
+`
+
+const InputContainer = styled.View`
+  background-color: white;
+  height: auto;
+  align-items: center;
+  width: 100%;
+`
+
+const Input = styled.TextInput`
+  border: 2px solid black;
+  color: black;
+  height: 52px;
+  width: 90%;
+  text-align: left;
+  font-size: 15px;
+  margin-bottom: 16px;
+  font-family: Comfortaa_500Medium;
+  padding: 15px;
+`
+
+const ButtonContainer = styled.View`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+const MainButton = styled.Pressable`
+  background-color: black;
+  height: 52px;
+  border-radius: 6px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+`
+
+const MainText = styled.Text`
+  text-align: center;
+  color: white;
+  width: 100px;
+  text-align: center;
+  font-size: 18px;
+  font-family: Comfortaa_500Medium;
+`
+
+const TermsContainer = styled.View`
+  background-color: white;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+const Terms = styled.Text`
+  color: black;
+  margin-left: 5%;
+  width: 95%;
+  font-size: 13px;
+  font-family: Comfortaa_500Medium;
+`
+
+const ListView = ({ navigation, providerData, location }) => {
   const toBook = useCallback(
     (_) => {
       navigation.navigate('Book')
@@ -38,8 +169,10 @@ const ListView = ({ navigation, providerData }) => {
     [navigation]
   )
 
+  console.log(providerData)
+
   return (
-    <ScrollView>
+    <Body>
       {providerData && !providerData.providers && (
         <Text>No providers found...</Text>
       )}
@@ -53,33 +186,38 @@ const ListView = ({ navigation, providerData }) => {
               img={bgImages[index]}
               toBook={toBook}
               toProviderPage={toProviderPage}
+              location={location}
             />
           )
         })}
-    </ScrollView>
+    </Body>
   )
 }
 
 const ProviderCard = React.memo(
-  ({ data, img, index, toBook, toProviderPage }) => {
+  ({ data, img, index, toBook, toProviderPage, location }) => {
     return (
-      <Card
-        style={{
-          borderBottomColor: '#efedf2',
-          borderBottomWidth: 1,
-        }}
+      <CardContainer
+        android_ripple={{ color: 'gray' }}
+        onPress={() => console.log(data)}
       >
-        <Card.Title
-          title={data.name}
-          subtitle={<Caption>Description Placeholder</Caption>}
-          left={(_) => <Avatar.Image size={48} source={avatarImages[index]} />}
-        />
-        <Card.Cover style={{ height: 100 }} source={img} />
-        <Card.Actions style={{ marginLeft: 'auto' }}>
-          <Button onPress={toProviderPage}>Details</Button>
-          <Button onPress={toBook}>Book</Button>
-        </Card.Actions>
-      </Card>
+        <InnerContainer>
+          <Avatar source={avatarImages[index]} />
+        </InnerContainer>
+        <InnerMiddleContainer></InnerMiddleContainer>
+        <InnerMiddleContainer></InnerMiddleContainer>
+        <InnerEndContainer>
+          <DistanceText>
+            {distance(
+              location.latitude,
+              location.longitude,
+              data.latitude,
+              data.longitude
+            ).toFixed(2)}
+            m
+          </DistanceText>
+        </InnerEndContainer>
+      </CardContainer>
     )
   }
 )

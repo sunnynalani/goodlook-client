@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { Text, View } from '../../components'
 import {
   KeyboardAvoidingView,

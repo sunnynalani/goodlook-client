@@ -340,7 +340,11 @@ const SearchView = ({ navigation }) => {
           providerData={providerData}
         />
       ) : (
-        <ListView navigation={navigation} providerData={providerData} />
+        <ListView
+          navigation={navigation}
+          providerData={providerData}
+          location={location}
+        />
       )}
       {/* <ButtonContainer>
         <MainButton android_ripple={{ color: 'white' }}>
