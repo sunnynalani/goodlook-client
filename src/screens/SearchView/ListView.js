@@ -50,6 +50,7 @@ const CardContainer = styled.Pressable`
   flex-direction: row;
   border-bottom-width: 0.5px;
   border-bottom-color: #d3d3d3;
+  overflow: hidden;
 `
 
 const Avatar = styled.Image`
@@ -72,7 +73,15 @@ const InnerMiddleContainer = styled.View`
   height: 100px;
   align-items: center;
   justify-content: center;
-  width: 31.5%;
+  width: 34%;
+`
+
+const AttributeContainer = styled.View`
+  background-color: transparent;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  width: 27%;
 `
 
 const InnerEndContainer = styled.View`
@@ -80,7 +89,17 @@ const InnerEndContainer = styled.View`
   height: 100px;
   align-items: center;
   justify-content: center;
-  width: 17%;
+  width: 19%;
+`
+
+const ImageEndBackground = styled.Image`
+  background-color: transparent;
+  height: 50%;
+  right: 0px;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  opacity: 0.1;
 `
 
 const DistanceText = styled.Text`
@@ -91,77 +110,66 @@ const DistanceText = styled.Text`
   font-family: Comfortaa_500Medium;
 `
 
-const InputContainer = styled.View`
-  background-color: white;
-  height: auto;
-  align-items: center;
-  width: 100%;
-`
-
-const Input = styled.TextInput`
-  border: 2px solid black;
+const TitleText = styled.Text`
   color: black;
-  height: 52px;
-  width: 90%;
-  text-align: left;
-  font-size: 15px;
-  margin-bottom: 16px;
-  font-family: Comfortaa_500Medium;
-  padding: 15px;
-`
-
-const ButtonContainer = styled.View`
-  background-color: white;
-  height: auto;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`
-
-const MainButton = styled.Pressable`
-  background-color: black;
-  height: 52px;
-  border-radius: 6px;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  align-items: center;
-  justify-content: center;
-  width: 90%;
-`
-
-const MainText = styled.Text`
-  text-align: center;
-  color: white;
-  width: 100px;
-  text-align: center;
-  font-size: 18px;
+  width: auto;
+  font-size: 14px;
   font-family: Comfortaa_500Medium;
 `
 
-const TermsContainer = styled.View`
-  background-color: white;
-  height: auto;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+const LocationText = styled.Text`
+  color: gray;
+  width: auto;
+  font-size: 10px;
+  font-family: Comfortaa_500Medium;
 `
 
-const Terms = styled.Text`
+const RatingContainer = styled.View`
+  flex-direction: row;
+  margin-top: 6px;
+  margin-bottom: 8px;
+  width: 80%;
+  height: auto;
+  justify-content: space-around;
+`
+
+const InnerAttributeContainer = styled.View`
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+  align-items: center;
+  padding-left: 15%;
+`
+
+const AttributeText = styled.Text`
+  text-align: center;
   color: black;
-  margin-left: 5%;
-  width: 95%;
-  font-size: 13px;
+  font-size: 12px;
   font-family: Comfortaa_500Medium;
+  margin-bottom: 3px;
+  margin-left: 5px;
 `
+
+//should be in config or util...
+const CATEGORIES_MAP = {
+  NAIL: 'nails',
+  LASHES: 'lashes',
+  HAIR: 'hair',
+  BROWS: 'brows',
+  WAX: 'wax',
+  MAKEUP: 'makeup',
+  OTHER: 'other',
+}
+
+/**
+ * not implementd on the api*
+ * user would be able to make their own background image
+ * and display it
+ *
+ * currently uses stock photos for these img bgs
+ */
 
 const ListView = ({ navigation, providerData, location }) => {
-  const toBook = useCallback(
-    (_) => {
-      navigation.navigate('Book')
-    },
-    [navigation]
-  )
-
   const toProviderPage = useCallback(
     (_) => {
       navigation.navigate('Book')
@@ -174,7 +182,7 @@ const ListView = ({ navigation, providerData, location }) => {
   return (
     <Body>
       {providerData && !providerData.providers && (
-        <Text>No providers found...</Text>
+        <ErrorText>No providers found...</ErrorText>
       )}
       {providerData &&
         providerData.providers.map((provider, index) => {
@@ -184,7 +192,6 @@ const ListView = ({ navigation, providerData, location }) => {
               index={index}
               data={provider}
               img={bgImages[index]}
-              toBook={toBook}
               toProviderPage={toProviderPage}
               location={location}
             />
@@ -195,17 +202,48 @@ const ListView = ({ navigation, providerData, location }) => {
 }
 
 const ProviderCard = React.memo(
-  ({ data, img, index, toBook, toProviderPage, location }) => {
+  ({ data, img, index, toProviderPage, location }) => {
     return (
       <CardContainer
         android_ripple={{ color: 'gray' }}
-        onPress={() => console.log(data)}
+        onPress={toProviderPage}
       >
+        <ImageEndBackground source={img} />
         <InnerContainer>
           <Avatar source={avatarImages[index]} />
         </InnerContainer>
-        <InnerMiddleContainer></InnerMiddleContainer>
-        <InnerMiddleContainer></InnerMiddleContainer>
+        <InnerMiddleContainer>
+          <TitleText numberOfLines={1}>{data.name}</TitleText>
+          <LocationText numberOfLines={1}>
+            {data.city}, {data.state}
+          </LocationText>
+          <RatingContainer>
+            {[...Array(data.average_rating)].map((_, i) => (
+              <FontAwesome key={i} name="star" size={12} color={'black'} />
+            ))}
+            {[...Array(5 - data.average_rating)].map((_, i) => (
+              <FontAwesome key={i} name="star-o" size={12} color={'black'} />
+            ))}
+          </RatingContainer>
+        </InnerMiddleContainer>
+        <AttributeContainer>
+          {!data.licensed && (
+            <InnerAttributeContainer>
+              <FontAwesome name="circle" size={6} color={'black'} />
+              <AttributeText>certified</AttributeText>
+            </InnerAttributeContainer>
+          )}
+          {data.categories
+            .filter((v, i) => i < 3)
+            .map((category, i) => {
+              return (
+                <InnerAttributeContainer key={i}>
+                  <FontAwesome name="circle" size={6} color={'black'} />
+                  <AttributeText>{CATEGORIES_MAP[category]}</AttributeText>
+                </InnerAttributeContainer>
+              )
+            })}
+        </AttributeContainer>
         <InnerEndContainer>
           <DistanceText>
             {distance(

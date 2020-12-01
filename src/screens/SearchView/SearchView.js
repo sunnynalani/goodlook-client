@@ -11,8 +11,14 @@ import MapViewContainer from './MapView'
 import ListView from './ListView'
 import Slider from '@react-native-community/slider'
 import styled from 'styled-components/native'
-import { Text, View } from '../../components'
-import { Pressable, TextInput, Platform, TouchableOpacity } from 'react-native'
+import {
+  Button,
+  Checkbox,
+  Paragraph,
+  View,
+  Dialog,
+  Portal,
+} from '../../components'
 
 const Body = styled.View`
   align-items: center;
@@ -83,71 +89,34 @@ const TabButtonContainer = styled.View`
   margin-top: 10px;
   margin-bottom: 10px;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   width: 90%;
 `
 
 const TabButton = styled.Pressable`
   background-color: black;
-  height: 20px;
+  height: 24px;
   border-radius: 6px;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 20%;
+  width: 30%;
   ${({ mr }) => mr && `margin-right: 16px;`}
 `
 
 const TabButtonText = styled.Text`
   text-align: center;
   color: white;
-  width: 100px;
+  width: auto;
   margin-bottom: 5px;
   font-size: 16px;
   font-family: Comfortaa_500Medium;
 `
 
-const ButtonContainer = styled.View`
-  background-color: white;
-  height: auto;
-  justify-content: center;
-  align-items: center;
+const InnerDialogContainer = styled.ScrollView`
+  background-color: transparent;
+  height: 50%;
   width: 100%;
-`
-
-const MainButton = styled.Pressable`
-  background-color: black;
-  height: 52px;
-  border-radius: 6px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  align-items: center;
-  justify-content: center;
-  width: 90%;
-`
-
-const MainText = styled.Text`
-  text-align: center;
-  color: white;
-  width: 100px;
-  text-align: center;
-  font-size: 18px;
-  font-family: Comfortaa_500Medium;
-`
-
-const TermsContainer = styled.View`
-  background-color: white;
-  height: auto;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`
-
-const Terms = styled.Text`
-  color: black;
-  margin-left: 5%;
-  width: 95%;
-  font-size: 13px;
-  font-family: Comfortaa_500Medium;
 `
 
 const IconButton = styled.TouchableOpacity`
@@ -157,6 +126,9 @@ const IconButton = styled.TouchableOpacity`
   align-items: center;
   width: auto;
 `
+
+//react native paper has a string value for unchecked...
+//not sure why they have it like that...
 
 const CHECKBOX_INITIAL_STATE = {
   licensed: { name: 'Licensed', value: 'unchecked' },
@@ -178,9 +150,11 @@ const SearchView = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState(null)
   const [providerData, setProviderData] = useState(null)
-  const [checkBoxes, setCheckBoxes] = useState(CHECKBOX_INITIAL_STATE)
+  const [checkBoxes, setCheckBoxes] = useState(CHECKBOX_INITIAL_STATE) //maybe use reducer
   const [distance, setDistance] = useState(5)
   const [rating, setRating] = useState(0)
+  const [sortDistance, setSortDistance] = useState('ASC')
+  const [sortRating, setSortRating] = useState('ASC')
   const [modal, setModal] = useState({
     visible: false,
     sortVisible: false,
@@ -228,17 +202,29 @@ const SearchView = ({ navigation }) => {
     setModal({ visible: false, sortVisible: false })
   }
 
-  const closeSortModal = (_) => {
-    setModal({ visible: false, sortVisible: false })
-  }
-
-  const openModal = (_) => {
+  const openFilterModal = (_) => {
+    console.log('filter')
     setModal({ visible: true, sortVisible: false })
   }
 
-  const openSortModal = (_) => {
-    setModal({ visible: false, sortVisible: true })
+  const handleSortDistance = (_) => {
+    sortDistance === 'ASC' ? setSortDistance('DESC') : setSortDistance('ASC')
   }
+
+  const handleSortRating = (_) => {
+    sortRating === 'ASC' ? setSortRating('DESC') : setSortRating('ASC')
+  }
+
+  /**
+   * this is a pretty rudamentary searching functionality
+   * a better and more effective way would be to implement this search on the backend
+   * by passing in a query string to the api
+   * implementing a good and in depth searching function onto a resolver
+   * although, creating this function would probably be a project on its own
+   *
+   * this search just uses a query string then uses postgresql "like" to find matches
+   * its not bad, but not great either
+   */
 
   const onChangeSearch = (query) => {
     setSearchQuery(query)
@@ -253,17 +239,17 @@ const SearchView = ({ navigation }) => {
           },
           {
             country: {
-              eq: query,
+              like: query + '%',
             },
           },
           {
             state: {
-              eq: query,
+              like: query + '%',
             },
           },
           {
             city: {
-              eq: query,
+              like: query + '%',
             },
           },
           {
@@ -289,7 +275,7 @@ const SearchView = ({ navigation }) => {
     <Body>
       <Tab>
         <InputContainer>
-          <IconButton onPress={() => console.log('search')}>
+          <IconButton onPress={() => console.log(searchQuery)}>
             <FontAwesome
               name="search"
               size={Dimensions.get('window').width * 0.06}
@@ -300,7 +286,11 @@ const SearchView = ({ navigation }) => {
               }}
             />
           </IconButton>
-          <Input placeholder={'search'} />
+          <Input
+            placeholder={'search'}
+            onChangeText={(searchQuery) => setSearchQuery(searchQuery)}
+            value={searchQuery}
+          />
           <IconButton onPress={() => setViewState(!viewState)}>
             <FontAwesome
               name={viewState ? 'list' : 'globe'}
@@ -321,15 +311,34 @@ const SearchView = ({ navigation }) => {
           <TabButton
             mr
             android_ripple={{ color: 'white' }}
-            onPress={() => console.log('filter')}
+            onPress={openFilterModal}
           >
             <TabButtonText>filter</TabButtonText>
           </TabButton>
           <TabButton
+            mr
             android_ripple={{ color: 'white' }}
-            onPress={() => console.log('sort')}
+            onPress={handleSortRating}
           >
-            <TabButtonText>sort</TabButtonText>
+            <TabButtonText>rating</TabButtonText>
+            <FontAwesome
+              name={sortRating === 'ASC' ? 'sort-up' : 'sort-down'}
+              color={'white'}
+              size={16}
+              style={{ marginLeft: '5%' }}
+            />
+          </TabButton>
+          <TabButton
+            android_ripple={{ color: 'white' }}
+            onPress={handleSortDistance}
+          >
+            <TabButtonText>distance</TabButtonText>
+            <FontAwesome
+              name={sortDistance === 'ASC' ? 'sort-up' : 'sort-down'}
+              color={'white'}
+              size={16}
+              style={{ marginLeft: '5%' }}
+            />
           </TabButton>
         </TabButtonContainer>
       </Tab>
@@ -346,18 +355,89 @@ const SearchView = ({ navigation }) => {
           location={location}
         />
       )}
-      {/* <ButtonContainer>
-        <MainButton android_ripple={{ color: 'white' }}>
-          <MainText>sign up</MainText>
-        </MainButton>
-      </ButtonContainer>
-      <TermsContainer>
-        <Terms>
-          By signing up, you agree to goodlook's Terms of Service and Privacy
-          Policy
-        </Terms>
-      </TermsContainer> */}
+      <Portal>
+        <FilterDialog
+          modal={modal}
+          rating={rating}
+          distance={distance}
+          setRating={setRating}
+          setDistance={setDistance}
+          checkBoxes={checkBoxes}
+          setCheckBoxes={setCheckBoxes}
+          closeModal={closeModal}
+        />
+      </Portal>
     </Body>
+  )
+}
+
+const FilterDialog = ({
+  modal,
+  rating,
+  distance,
+  setRating,
+  setDistance,
+  checkBoxes,
+  setCheckBoxes,
+  closeModal,
+}) => {
+  return (
+    <Dialog visible={modal.visible} onDismiss={closeModal}>
+      <Dialog.Content>
+        <View>
+          <Paragraph>Rating: {rating}</Paragraph>
+          <Slider
+            style={{ width: '100%', height: 20 }}
+            step={1}
+            minimumValue={0}
+            maximumValue={5}
+            minimumTrackTintColor="gray"
+            maximumTrackTintColor="gray"
+            value={rating}
+            onSlidingComplete={(v) => setRating(v)}
+          />
+        </View>
+        <View>
+          <Paragraph>Distance within: {distance} miles</Paragraph>
+          <Slider
+            style={{ width: '100%', height: 20 }}
+            step={5}
+            minimumValue={0}
+            maximumValue={30}
+            minimumTrackTintColor="gray"
+            maximumTrackTintColor="gray"
+            value={distance}
+            onSlidingComplete={(v) => setDistance(v)}
+          />
+        </View>
+        <InnerDialogContainer>
+          {Object.keys(checkBoxes).map((key, index) => {
+            return (
+              <View
+                key={index}
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+              >
+                <Checkbox
+                  key={index}
+                  status={checkBoxes[key].value}
+                  onPress={() => {
+                    checkBoxes[key].value === 'unchecked'
+                      ? (checkBoxes[key].value = 'checked')
+                      : (checkBoxes[key].value = 'unchecked')
+                    setCheckBoxes({ ...checkBoxes })
+                  }}
+                />
+                <Paragraph>{checkBoxes[key].name}</Paragraph>
+              </View>
+            )
+          })}
+        </InnerDialogContainer>
+      </Dialog.Content>
+      <Dialog.Actions>
+        <Button onPress={closeModal}>Cancel</Button>
+        <Button onPress={closeModal}>Apply</Button>
+      </Dialog.Actions>
+    </Dialog>
   )
 }
 
