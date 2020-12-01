@@ -15,6 +15,7 @@ import {
   AttributesView,
   AddressView,
   ProviderFinalView,
+  ClientFinalView,
 } from '../screens/SignInView'
 import { asClient, asProvider } from '../utils'
 
@@ -48,6 +49,7 @@ const StackNavigation = () => {
       <Stack.Screen name="Attributes" component={AttributesView} />
       <Stack.Screen name="Address" component={AddressView} />
       <Stack.Screen name="ProviderFinal" component={ProviderFinalView} />
+      <Stack.Screen name="ClientFinal" component={ClientFinalView} />
     </Stack.Navigator>
   )
 }

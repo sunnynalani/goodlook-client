@@ -15,11 +15,23 @@ export const LOGIN_CLIENT = gql`
         lastName
       }
     }
+    loginProvider(usernameOrEmail: $usernameOrEmail, password: $password) {
+      errors {
+        field
+        message
+      }
+      provider {
+        id
+        username
+        email
+        name
+      }
+    }
   }
 `
 export const REGISTER_CLIENT = gql`
   mutation registerClient($input: UsernamePasswordInput!) {
-    registerClient(input: $UsernamePasswordInput) {
+    registerClient(input: $input) {
       errors {
         field
         message

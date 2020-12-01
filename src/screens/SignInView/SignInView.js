@@ -84,7 +84,7 @@ const LoginButton = styled.Pressable`
   justify-content: center;
   align-items: center;
   width: 40%;
-  marginright: 2.5%;
+  margin-right: 2.5%;
 `
 
 const RegisterButton = styled.Pressable`
@@ -95,7 +95,7 @@ const RegisterButton = styled.Pressable`
   justify-content: center;
   align-items: center;
   width: 45%;
-  marginleft: 2.5%;
+  margin-left: 2.5%;
 `
 
 const ButtonText = styled.Text`

@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { Text, View } from '../../components'
-import { Pressable, TextInput, Platform } from 'react-native'
+import { View, Text, Pressable, TextInput, Platform } from 'react-native'
 import { CommonActions } from '@react-navigation/native'
 import { useMutation } from '@apollo/client'
 import { REGISTER_PROVIDER } from './queries'
@@ -28,7 +27,7 @@ const Title = styled.Text`
   color: black;
   height: auto;
   margin-top: 15%;
-  marginleft: 10%;
+  margin-left: 10%;
   letter-spacing: -0.54px;
   font-size: 36px;
   font-family: Comfortaa_500Medium;
@@ -159,15 +158,22 @@ const ProviderFinalView = (props) => {
       email: email,
       password: password,
     }
-    console.log(categories)
     await register({
       variables: {
         providerInput: providerInput,
         attributesInput: attributesInput,
         input: input,
       },
-    })
-    toMain()
+    }).then(
+      (res) => {
+        console.log(res)
+        toMain()
+      },
+      (err) => {
+        console.log('error')
+        setError(true)
+      }
+    )
   }
   return (
     <Body>

@@ -1,13 +1,9 @@
-import React, { useState } from 'react'
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  TextInput,
-  Platform,
-  TouchableOpacity,
-} from 'react-native'
+import React, { useState, useCallback } from 'react'
+import { Text, View } from '../../components'
+import { Pressable, TextInput, Platform } from 'react-native'
+import { CommonActions } from '@react-navigation/native'
 import { useMutation } from '@apollo/client'
-import { LOGIN_CLIENT } from './queries'
+import { REGISTER_CLIENT } from './queries'
 import styled from 'styled-components/native'
 
 const Body = styled.View`
@@ -22,18 +18,27 @@ const Body = styled.View`
 
 const TitleContainer = styled.View`
   background-color: white;
-  height: 30%;
+  height: auto;
   justify-content: center;
   width: 100%;
+  margin-bottom: 5%;
 `
 
 const Title = styled.Text`
   color: black;
   height: auto;
+  margin-top: 15%;
   margin-left: 10%;
   letter-spacing: -0.54px;
   font-size: 36px;
   font-family: Comfortaa_500Medium;
+`
+const ErrorText = styled.Text`
+  color: red;
+  height: auto;
+  font-size: 12px;
+  font-family: Comfortaa_500Medium;
+  margin-bottom: 20px;
 `
 
 const InputContainer = styled.View`
@@ -41,15 +46,6 @@ const InputContainer = styled.View`
   height: auto;
   align-items: center;
   width: 100%;
-  margin-bottom: 15%;
-`
-
-const ErrorText = styled.Text`
-  color: red;
-  height: auto;
-  font-size: 12px;
-  font-family: Comfortaa_500Medium;
-  margin-bottom: 20px;
 `
 
 const Input = styled.TextInput`
@@ -76,8 +72,8 @@ const MainButton = styled.Pressable`
   background-color: black;
   height: 52px;
   border-radius: 6px;
-  margin-top: 30px;
-  margin-bottom: 5%;
+  margin-top: 16px;
+  margin-bottom: 16px;
   align-items: center;
   justify-content: center;
   width: 90%;
@@ -87,33 +83,34 @@ const MainText = styled.Text`
   text-align: center;
   color: white;
   width: 100px;
-  margin-bottom: 6px;
   text-align: center;
   font-size: 18px;
   font-family: Comfortaa_500Medium;
 `
 
-const ForgetPWButton = styled.TouchableOpacity`
+const TermsContainer = styled.View`
   background-color: white;
   height: auto;
   justify-content: center;
   align-items: center;
-  width: auto;
+  width: 100%;
 `
 
-const ForgetPWText = styled.Text`
+const Terms = styled.Text`
   color: black;
-  width: 90%;
-  text-align: center;
-  font-size: 15px;
+  margin-left: 5%;
+  width: 95%;
+  font-size: 13px;
   font-family: Comfortaa_500Medium;
-  text-decoration: underline;
 `
 
-const LoginView = ({ navigation }) => {
-  const [usernameOrEmail, setUsernameOrEmail] = useState('')
-  const [password, setPassword] = useState('')
+const ClientFinalView = (props) => {
+  const [email, setEmail] = useState('')
   const [error, setError] = useState(false)
+
+  const [register] = useMutation(REGISTER_CLIENT)
+  const { navigation } = props
+  const { username, password } = props.route.params
 
   const toMain = () => {
     navigation.dispatch(
@@ -124,57 +121,64 @@ const LoginView = ({ navigation }) => {
     )
   }
 
-  //express-session broken atm...
-  const [login] = useMutation(LOGIN_CLIENT, {
-    variables: {
-      usernameOrEmail: usernameOrEmail,
-      password: password,
-    },
-    onError: (err) => {
-      setError(true)
-    },
-    onCompleted: (data) => {
-      if (data.loginClient.errors) setError(true)
-      toMain()
-    },
-  })
+  const toStart = () => {
+    navigation.navigate('ClientSignUp')
+  }
 
-  const toForgotPswd = () => {
-    console.log('fgort')
-    //navigation.navigate('ForgotPassword')
+  const signUp = async (_) => {
+    if (email === '' || email.length < 4 || !email.includes('@')) {
+      setError(true)
+      return
+    }
+    const input = {
+      username: username,
+      email: email,
+      password: password,
+    }
+    console.log(input)
+    await register({
+      variables: {
+        input: input,
+      },
+    }).then(
+      (res) => {
+        console.log(res)
+        toMain()
+      },
+      (err) => {
+        console.log('error')
+        setError(true)
+      }
+    )
   }
 
   return (
     <Body>
       <TitleContainer>
-        <Title>login</Title>
+        <Title>last step...</Title>
       </TitleContainer>
-      {error && <ErrorText>invalid credentials</ErrorText>}
+      {error && <ErrorText>something went wrong!</ErrorText>}
       <InputContainer>
         <Input
-          placeholder={'username or email'}
-          onChangeText={(usernameOrEmail) =>
-            setUsernameOrEmail(usernameOrEmail)
-          }
-          value={usernameOrEmail}
-        ></Input>
-        <Input
-          placeholder={'password'}
-          onChangeText={(password) => setPassword(password)}
-          value={password}
-          secureTextEntry
+          placeholder={'email'}
+          onChangeText={(email) => setEmail(email)}
+          value={email}
+          keyboardType={'email-address'}
         ></Input>
       </InputContainer>
       <ButtonContainer>
-        <MainButton android_ripple={{ color: 'white' }} onPress={login}>
-          <MainText>log in</MainText>
+        <MainButton android_ripple={{ color: 'white' }} onPress={signUp}>
+          <MainText>sign up</MainText>
         </MainButton>
       </ButtonContainer>
-      <ForgetPWButton onPress={toForgotPswd}>
-        <ForgetPWText>Forget Password?</ForgetPWText>
-      </ForgetPWButton>
+      <TermsContainer>
+        <Terms>
+          By signing up, you agree to goodlook's Terms of Service and Privacy
+          Policy
+        </Terms>
+      </TermsContainer>
     </Body>
   )
 }
 
-export default LoginView
+export default ClientFinalView

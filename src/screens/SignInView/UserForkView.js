@@ -26,7 +26,7 @@ const TitleContainer = styled.View`
 const Title = styled.Text`
   color: black;
   height: auto;
-  marginleft: 5%;
+  margin-left: 5%;
   letter-spacing: -0.54px;
   font-size: 36px;
   font-family: Comfortaa_500Medium;
@@ -35,8 +35,8 @@ const Title = styled.Text`
 const Subtitle = styled.Text`
   color: black;
   height: auto;
-  marginleft: auto;
-  marginright: 5%;
+  margin-left: auto;
+  margin-right: 5%;
   letter-spacing: -0.54px;
   font-size: 36px;
   font-family: Comfortaa_500Medium;
