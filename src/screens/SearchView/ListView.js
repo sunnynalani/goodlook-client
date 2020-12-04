@@ -177,8 +177,6 @@ const ListView = ({ navigation, providerData, location }) => {
     [navigation]
   )
 
-  console.log(providerData)
-
   return (
     <Body>
       {providerData && !providerData.providers && (
@@ -227,14 +225,9 @@ const ProviderCard = React.memo(
           </RatingContainer>
         </InnerMiddleContainer>
         <AttributeContainer>
-          {!data.licensed && (
-            <InnerAttributeContainer>
-              <FontAwesome name="circle" size={6} color={'black'} />
-              <AttributeText>certified</AttributeText>
-            </InnerAttributeContainer>
-          )}
           {data.categories
             .filter((v, i) => i < 3)
+            .sort((a, b) => a.localeCompare(b))
             .map((category, i) => {
               return (
                 <InnerAttributeContainer key={i}>
@@ -243,6 +236,12 @@ const ProviderCard = React.memo(
                 </InnerAttributeContainer>
               )
             })}
+          {!data.licensed && (
+            <InnerAttributeContainer>
+              <FontAwesome name="circle" size={6} color={'black'} />
+              <AttributeText>certified</AttributeText>
+            </InnerAttributeContainer>
+          )}
         </AttributeContainer>
         <InnerEndContainer>
           <DistanceText>

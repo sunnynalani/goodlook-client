@@ -1,23 +1,8 @@
-import React, { useState, useEffect, useReducer } from 'react'
-import {
-  Appbar,
-  Text,
-  View,
-  Button,
-  Banner,
-  DataTable,
-  Card,
-  List,
-  Searchbar,
-} from '../../components'
-import { FontAwesome } from '@expo/vector-icons'
+import React from 'react'
+import { View } from '../../components'
 import { Dimensions } from 'react-native'
 import styles from './styles'
 import MapView from 'react-native-maps'
-import { useLazyQuery } from '@apollo/client'
-import { BlurView } from 'expo-blur'
-import * as Location from 'expo-location'
-import { GET_PROVIDERS } from './queries'
 
 const MapViewContainer = ({ navigation, location, providerData }) => {
   return (
@@ -37,13 +22,16 @@ const MapViewContainer = ({ navigation, location, providerData }) => {
         >
           {providerData.providers.map((provider, index) => {
             return (
-              <MapView.Marker
+              <MapView.Circle
                 key={index}
                 title={provider.name}
-                coordinate={{
+                center={{
                   latitude: provider.latitude,
                   longitude: provider.longitude,
                 }}
+                radius={500}
+                strokeColor="rgba(78, 255, 189, 0.15)"
+                fillColor="rgba(78, 255, 189, 0.15)"
               />
             )
           })}

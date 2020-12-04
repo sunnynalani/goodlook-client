@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
-import { useQuery, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { GET_PROVIDERS } from './queries'
-import SearchTable from './SearchTable'
 import { Dimensions } from 'react-native'
-import { BlurView } from 'expo-blur'
 import * as Location from 'expo-location'
-import styles from './styles'
 import MapViewContainer from './MapView'
 import ListView from './ListView'
 import Slider from '@react-native-community/slider'
 import styled from 'styled-components/native'
+import { distance as getDistance } from '../../utils'
 import {
   Button,
   Checkbox,
@@ -149,12 +147,12 @@ const SearchView = ({ navigation }) => {
   const [lockOverlay, setLockOverlay] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState(null)
+  const [within, setWithin] = useState(null)
   const [providerData, setProviderData] = useState(null)
   const [checkBoxes, setCheckBoxes] = useState(CHECKBOX_INITIAL_STATE) //maybe use reducer
   const [distance, setDistance] = useState(5)
   const [rating, setRating] = useState(0)
-  const [sortDistance, setSortDistance] = useState('ASC')
-  const [sortRating, setSortRating] = useState('ASC')
+  const [sort, setSort] = useState('distance,-1')
   const [modal, setModal] = useState({
     visible: false,
     sortVisible: false,
@@ -176,19 +174,21 @@ const SearchView = ({ navigation }) => {
         setLockOverlay(true)
       } else {
         const userLocation = await Location.getCurrentPositionAsync({})
+        const withinInput = {
+          longitude: userLocation.coords.longitude,
+          latitude: userLocation.coords.latitude,
+          distance: 5,
+        }
         const inputs = {
           filters: {},
-          within: {
-            longitude: userLocation.coords.longitude,
-            latitude: userLocation.coords.latitude,
-            distance: 5,
-          },
+          within: withinInput,
         }
+        setWithin(withinInput)
         setLocation({
           longitude: userLocation.coords.longitude,
           latitude: userLocation.coords.latitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
         })
         setSearchInput(inputs)
         getData()
@@ -203,79 +203,117 @@ const SearchView = ({ navigation }) => {
   }
 
   const openFilterModal = (_) => {
-    console.log('filter')
     setModal({ visible: true, sortVisible: false })
   }
 
-  const handleSortDistance = (_) => {
-    sortDistance === 'ASC' ? setSortDistance('DESC') : setSortDistance('ASC')
+  const distanceFromCurrent = (latitude, longitude) => {
+    return getDistance(
+      location.latitude,
+      location.longitude,
+      latitude,
+      longitude
+    )
   }
 
-  const handleSortRating = (_) => {
-    sortRating === 'ASC' ? setSortRating('DESC') : setSortRating('ASC')
+  const handleSort = () => {
+    const parsedSort = sort.split(',')
+    if (parsedSort[0] === 'distance') {
+      if (parsedSort[1] > 0) {
+        providerData.providers.sort((a, b) => {
+          distanceFromCurrent(a.latitude, a.longitude) -
+            distanceFromCurrent(b.latitude, b.longitude)
+        })
+      } else {
+        providerData.providers.sort((a, b) => {
+          distanceFromCurrent(b.latitude, b.longitude) -
+            distanceFromCurrent(a.latitude, a.longitude)
+        })
+      }
+    } else {
+      if (parsedSort[1] > 0) {
+        providerData.providers.sort((a, b) => {
+          a.rating - b.rating
+        })
+      } else {
+        providerData.providers.sort((a, b) => {
+          b.rating - a.rating
+        })
+      }
+    }
+    console.log(providerData)
+    //setProviderData(...providerData)
+  }
+
+  const handleNearMe = (_) => {
+    setSearchInput({
+      within: within,
+    })
+    getData()
   }
 
   /**
    * this is a pretty rudamentary searching functionality
    * a better and more effective way would be to implement this search on the backend
    * by passing in a query string to the api
-   * implementing a good and in depth searching function onto a resolver
+   * implementing a good and in-depth searching function onto a resolver
    * although, creating this function would probably be a project on its own
    *
    * this search just uses a query string then uses postgresql "like" to find matches
    * its not bad, but not great either
    */
 
-  const onChangeSearch = (query) => {
-    setSearchQuery(query)
-    setSearchInput({
-      ...searchInput,
-      filters: {
+  const onSubmit = (_) => {
+    if (searchQuery === '') {
+      handleNearMe()
+    } else {
+      const filters = {
         OR: [
           {
             name: {
-              like: query + '%',
+              like: searchQuery,
             },
           },
           {
             country: {
-              like: query + '%',
+              eq: searchQuery,
             },
           },
           {
             state: {
-              like: query + '%',
+              eq: searchQuery,
             },
           },
           {
             city: {
-              like: query + '%',
+              eq: searchQuery,
             },
           },
           {
             street: {
-              like: query + '%',
+              like: searchQuery,
             },
           },
           {
             zipcode: {
-              eq: query,
+              eq: isNaN(searchQuery) ? null : Number(searchQuery),
             },
           },
         ],
-      },
-    })
+      }
+      setSearchInput({
+        filters: filters,
+      })
+      getData()
+    }
   }
 
-  const onConfirmSearch = (_) => {
-    getData()
-  }
+  const applyFilter = (_) => {}
 
   return (
     <Body>
       <Tab>
         <InputContainer>
-          <IconButton onPress={() => console.log(searchQuery)}>
+          <IconButton onPress={onSubmit}>
             <FontAwesome
               name="search"
               size={Dimensions.get('window').width * 0.06}
@@ -289,6 +327,7 @@ const SearchView = ({ navigation }) => {
           <Input
             placeholder={'search'}
             onChangeText={(searchQuery) => setSearchQuery(searchQuery)}
+            onSubmitEditing={onSubmit}
             value={searchQuery}
           />
           <IconButton onPress={() => setViewState(!viewState)}>
@@ -318,27 +357,12 @@ const SearchView = ({ navigation }) => {
           <TabButton
             mr
             android_ripple={{ color: 'white' }}
-            onPress={handleSortRating}
+            onPress={handleNearMe}
           >
-            <TabButtonText>rating</TabButtonText>
-            <FontAwesome
-              name={sortRating === 'ASC' ? 'sort-up' : 'sort-down'}
-              color={'white'}
-              size={16}
-              style={{ marginLeft: '5%' }}
-            />
+            <TabButtonText>near me</TabButtonText>
           </TabButton>
-          <TabButton
-            android_ripple={{ color: 'white' }}
-            onPress={handleSortDistance}
-          >
-            <TabButtonText>distance</TabButtonText>
-            <FontAwesome
-              name={sortDistance === 'ASC' ? 'sort-up' : 'sort-down'}
-              color={'white'}
-              size={16}
-              style={{ marginLeft: '5%' }}
-            />
+          <TabButton android_ripple={{ color: 'white' }} onPress={handleSort}>
+            <TabButtonText>distance -</TabButtonText>
           </TabButton>
         </TabButtonContainer>
       </Tab>
