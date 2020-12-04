@@ -16,7 +16,7 @@ import {
   Checkbox,
 } from '../../components'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
-import { useQuery, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { GET_PROVIDERS } from './queries'
 import SearchTable from './SearchTable'
 import { Dimensions } from 'react-native'
