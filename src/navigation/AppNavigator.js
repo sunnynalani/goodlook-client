@@ -16,6 +16,7 @@ import {
   AddressView,
   ProviderFinalView,
   ClientFinalView,
+  ClientNameView,
 } from '../screens/SignInView'
 import { asClient, asProvider } from '../utils'
 
@@ -25,12 +26,13 @@ const StackNavigation = () => {
   const { loading, error, data } = useQuery(ME)
   if (loading) return <></> //return loading screen todo
   if (error) return <></> //return error screen todo
+  console.log(data)
 
   let initialRoute = 'Main'
   if (data.meClient) {
-    asClient(data.meClient.id)
+    asClient()
   } else if (data.meProvider) {
-    asProvider(data.meProvider)
+    asProvider()
   } else {
     initialRoute = 'SignIn'
   }
@@ -50,6 +52,7 @@ const StackNavigation = () => {
       <Stack.Screen name="Address" component={AddressView} />
       <Stack.Screen name="ProviderFinal" component={ProviderFinalView} />
       <Stack.Screen name="ClientFinal" component={ClientFinalView} />
+      <Stack.Screen name="ClientNameView" component={ClientNameView} />
     </Stack.Navigator>
   )
 }

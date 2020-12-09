@@ -110,8 +110,13 @@ const ClientFinalView = (props) => {
 
   const [register] = useMutation(REGISTER_CLIENT)
   const { navigation } = props
-  const { username, password } = props.route.params
+  const { username, password, firstName, lastName } = props.route.params
 
+  /**
+   * Resets navigation with the specified path history
+   * This is so that the user does not back to this page
+   * once user creates an account
+   */
   const toMain = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -119,10 +124,6 @@ const ClientFinalView = (props) => {
         routes: [{ name: 'SignIn' }, { name: 'Main' }],
       })
     )
-  }
-
-  const toStart = () => {
-    navigation.navigate('ClientSignUp')
   }
 
   const signUp = async (_) => {
@@ -135,14 +136,18 @@ const ClientFinalView = (props) => {
       email: email,
       password: password,
     }
-    console.log(input)
+    const attributeInput = {
+      first_name: firstName,
+      last_name: lastName,
+    }
     await register({
       variables: {
         input: input,
+        attributeInput: attributeInput,
       },
     }).then(
       (res) => {
-        console.log(res)
+        ;(async () => await asClient())()
         toMain()
       },
       (err) => {

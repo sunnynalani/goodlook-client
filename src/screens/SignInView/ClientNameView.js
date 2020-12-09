@@ -1,14 +1,9 @@
 import React, { useState, useCallback } from 'react'
 import { Text, View } from '../../components'
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  TextInput,
-  Platform,
-} from 'react-native'
+import { Pressable, TextInput, Platform } from 'react-native'
 import styled from 'styled-components/native'
 
-const Body = styled.KeyboardAvoidingView`
+const Body = styled.View`
   align-items: center;
   background-color: white;
   display: flex;
@@ -48,14 +43,6 @@ const InputContainer = styled.View`
   align-items: center;
   width: 100%;
   margin-bottom: 10%;
-`
-
-const ErrorText = styled.Text`
-  color: red;
-  height: auto;
-  font-size: 12px;
-  font-family: Comfortaa_500Medium;
-  margin-bottom: 20px;
 `
 
 const Input = styled.TextInput`
@@ -98,64 +85,41 @@ const MainText = styled.Text`
   font-family: Comfortaa_500Medium;
 `
 
-const ClientSignUpView = ({ navigation }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [repeatPassword, setRepeatPassword] = useState('')
-  const [errors, setErrors] = useState(false)
+const ClientNameView = (props) => {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
 
-  const toClientName = () => {
-    if (
-      username.length <= 3 ||
-      username.length >= 18 ||
-      password.length <= 8 ||
-      repeatPassword.length <= 8 ||
-      password !== repeatPassword
-    ) {
-      setErrors(true)
-      return
-    }
-    navigation.navigate('ClientNameView', {
+  const { username, password } = props.route.params
+
+  const toClientFinal = () => {
+    props.navigation.navigate('ClientFinal', {
       username: username,
       password: password,
+      firstName: firstName,
+      lastName: lastName,
     })
   }
 
   return (
     <Body behavior={'padding'}>
       <TitleContainer>
-        <Title>step 1</Title>
-        <Subtitle>basic information</Subtitle>
+        <Title>step 2</Title>
+        <Subtitle>personal information</Subtitle>
       </TitleContainer>
-      {errors && (
-        <>
-          <ErrorText>
-            username must be at least 4 characters{'\n'}
-            password must be at least 8 characters
-          </ErrorText>
-        </>
-      )}
       <InputContainer behavior="padding" enabled>
         <Input
-          placeholder={errors.username ? 'invalid input' : 'username'}
-          onChangeText={(username) => setUsername(username)}
-          value={username}
+          placeholder={'first name'}
+          onChangeText={(fn) => setFirstName(fn)}
+          value={firstName}
         ></Input>
         <Input
-          placeholder={errors.passwords ? 'invalid input' : 'password'}
-          onChangeText={(password) => setPassword(password)}
-          value={password}
-          secureTextEntry
-        ></Input>
-        <Input
-          placeholder={errors.passwords ? 'invalid input' : 'repeat password'}
-          onChangeText={(repeatPassword) => setRepeatPassword(repeatPassword)}
-          value={repeatPassword}
-          secureTextEntry
+          placeholder={'last name'}
+          onChangeText={(ln) => setLastName(ln)}
+          value={lastName}
         ></Input>
       </InputContainer>
       <ButtonContainer>
-        <MainButton android_ripple={{ color: 'white' }} onPress={toClientName}>
+        <MainButton android_ripple={{ color: 'white' }} onPress={toClientFinal}>
           <MainText>next</MainText>
         </MainButton>
       </ButtonContainer>
@@ -163,4 +127,4 @@ const ClientSignUpView = ({ navigation }) => {
   )
 }
 
-export default ClientSignUpView
+export default ClientNameView

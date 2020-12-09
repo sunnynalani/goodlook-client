@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
-import { CommonActions } from '@react-navigation/native'
+import SearchNavigator from './SearchNavigator'
 import ProfileView from '../screens/ProfileView/ProfileView'
-import SearchView from '../screens/SearchView/SearchView'
 import BookView from '../screens/BookView/BookView'
 import NotificationView from '../screens/NotificationView/NotificationView'
 
@@ -23,7 +22,7 @@ export const MainNavigator = () => {
     >
       <Tab.Screen
         name="Search"
-        component={SearchView}
+        component={SearchNavigator}
         options={{
           tabBarLabel: 'Search',
           tabBarIcon: ({ color }) => (

@@ -4,6 +4,13 @@ import { normalize } from '../../utils'
 
 const { text, title } = theme.colors
 
+/**
+ *
+ * First iteration of styling
+ * refactored...
+ *
+ */
+
 export const styles = StyleSheet.create({
   surface: {
     padding: 8,

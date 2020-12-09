@@ -6,9 +6,11 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native'
+import { CommonActions } from '@react-navigation/native'
 import { useMutation } from '@apollo/client'
-import { LOGIN_CLIENT } from './queries'
+import { LOGIN } from './queries'
 import styled from 'styled-components/native'
+import { asClient, asProvider } from '../../utils'
 
 const Body = styled.View`
   align-items: center;
@@ -115,6 +117,15 @@ const LoginView = ({ navigation }) => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
 
+  const verifyResponse = async (res) => {
+    await asClient()
+  }
+
+  /**
+   * Resets navigation with the specified path history
+   * This is so that the user does not back to this page
+   * once user creates an account
+   */
   const toMain = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -124,20 +135,46 @@ const LoginView = ({ navigation }) => {
     )
   }
 
-  //express-session broken atm...
-  const [login] = useMutation(LOGIN_CLIENT, {
-    variables: {
-      usernameOrEmail: usernameOrEmail,
-      password: password,
-    },
-    onError: (err) => {
+  const [login] = useMutation(LOGIN)
+
+  const handleLogin = async () => {
+    if (!usernameOrEmail || !password) {
       setError(true)
-    },
-    onCompleted: (data) => {
-      if (data.loginClient.errors) setError(true)
-      toMain()
-    },
-  })
+      return
+    } else {
+      await login({
+        variables: {
+          password: password,
+          usernameOrEmail: usernameOrEmail,
+        },
+      }).then(
+        ({ data }) => {
+          console.log(data)
+          if (data.loginClient) {
+            if (data.loginClient.errors) {
+              setError(true)
+              return
+            } else {
+              ;(async () => await asClient())()
+              toMain()
+            }
+          } else if (data.loginProvider) {
+            if (data.loginProvider.err) {
+              setError(true)
+              return
+            } else {
+              ;(async () => await asProvider())()
+              toMain()
+            }
+          }
+        },
+        (err) => {
+          console.log(err.message)
+          setError(true)
+        }
+      )
+    }
+  }
 
   const toForgotPswd = () => {
     console.log('fgort')
@@ -166,7 +203,7 @@ const LoginView = ({ navigation }) => {
         ></Input>
       </InputContainer>
       <ButtonContainer>
-        <MainButton android_ripple={{ color: 'white' }} onPress={login}>
+        <MainButton android_ripple={{ color: 'white' }} onPress={handleLogin}>
           <MainText>log in</MainText>
         </MainButton>
       </ButtonContainer>

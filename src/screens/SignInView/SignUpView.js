@@ -13,7 +13,9 @@ import styles from './styles'
 
 /**
  *
- * MAKE SIGN UP VIEW HERE
+ * First iteration of the sign up view
+ * refactored...
+ *
  */
 const SignUpView = ({ navigation }) => {
   const [firstName, setFirstName] = useState('')

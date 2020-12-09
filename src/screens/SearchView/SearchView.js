@@ -30,7 +30,7 @@ const Body = styled.View`
 
 const Tab = styled.View`
   background-color: white;
-  height: 125px;
+  height: 150px;
   width: 100%;
   align-items: center;
   justify-content: flex-end;
@@ -113,7 +113,7 @@ const TabButtonText = styled.Text`
 
 const InnerDialogContainer = styled.ScrollView`
   background-color: transparent;
-  height: 50%;
+  height: 70%;
   width: 100%;
 `
 
@@ -141,6 +141,8 @@ const CHECKBOX_INITIAL_STATE = {
   flexible_timing: { name: 'Flexible Timing', value: 'unchecked' },
 }
 
+const DEFAULT_DISTANCE = 10
+
 const SearchView = ({ navigation }) => {
   const [viewState, setViewState] = useState(false) //terrible way to do this
   const [location, setLocation] = useState(null)
@@ -150,9 +152,8 @@ const SearchView = ({ navigation }) => {
   const [within, setWithin] = useState(null)
   const [providerData, setProviderData] = useState(null)
   const [checkBoxes, setCheckBoxes] = useState(CHECKBOX_INITIAL_STATE) //maybe use reducer
-  const [distance, setDistance] = useState(5)
-  const [rating, setRating] = useState(0)
-  const [sort, setSort] = useState('distance,-1')
+  const [sort, setSort] = useState(false)
+  const [near, setNear] = useState(false)
   const [modal, setModal] = useState({
     visible: false,
     sortVisible: false,
@@ -177,11 +178,14 @@ const SearchView = ({ navigation }) => {
         const withinInput = {
           longitude: userLocation.coords.longitude,
           latitude: userLocation.coords.latitude,
-          distance: 5,
+          distance: DEFAULT_DISTANCE,
         }
         const inputs = {
           filters: {},
           within: withinInput,
+          sort: {
+            name: 'ASC',
+          },
         }
         setWithin(withinInput)
         setLocation({
@@ -197,13 +201,18 @@ const SearchView = ({ navigation }) => {
   }, [])
 
   const closeModal = (_) => {
+    setModal({ visible: false })
+  }
+
+  const resetModal = (_) => {
     setCheckBoxes(CHECKBOX_INITIAL_STATE)
-    setDistance(5)
-    setModal({ visible: false, sortVisible: false })
+    handleNearMe()
+    getData()
+    closeModal()
   }
 
   const openFilterModal = (_) => {
-    setModal({ visible: true, sortVisible: false })
+    setModal({ visible: true })
   }
 
   const distanceFromCurrent = (latitude, longitude) => {
@@ -215,39 +224,52 @@ const SearchView = ({ navigation }) => {
     )
   }
 
+  /**
+   * Front end sort
+   * There is a dynamic sort on api
+   *
+   * Swap to that once more data exists and front requires less load
+   */
   const handleSort = () => {
-    const parsedSort = sort.split(',')
-    if (parsedSort[0] === 'distance') {
-      if (parsedSort[1] > 0) {
-        providerData.providers.sort((a, b) => {
-          distanceFromCurrent(a.latitude, a.longitude) -
-            distanceFromCurrent(b.latitude, b.longitude)
-        })
-      } else {
-        providerData.providers.sort((a, b) => {
-          distanceFromCurrent(b.latitude, b.longitude) -
-            distanceFromCurrent(a.latitude, a.longitude)
-        })
-      }
+    let temp = [...providerData.providers]
+    if (sort) {
+      temp.sort((a, b) => {
+        let aDistance = distanceFromCurrent(a.latitude, a.longitude)
+        let bDistance = distanceFromCurrent(b.latitude, b.longitude)
+        return aDistance - bDistance
+      })
     } else {
-      if (parsedSort[1] > 0) {
-        providerData.providers.sort((a, b) => {
-          a.rating - b.rating
-        })
-      } else {
-        providerData.providers.sort((a, b) => {
-          b.rating - a.rating
-        })
-      }
+      temp.sort((a, b) => {
+        let aDistance = distanceFromCurrent(a.latitude, a.longitude)
+        let bDistance = distanceFromCurrent(b.latitude, b.longitude)
+        return bDistance - aDistance
+      })
     }
-    console.log(providerData)
-    //setProviderData(...providerData)
+    setSort(!sort)
+    setProviderData({
+      errors: providerData.errors,
+      providers: temp,
+    })
   }
 
   const handleNearMe = (_) => {
     setSearchInput({
       within: within,
+      sort: {
+        name: 'ASC',
+      },
     })
+    setNear(false)
+    getData()
+  }
+
+  const handleEverywhere = (_) => {
+    setSearchInput({
+      sort: {
+        name: 'ASC',
+      },
+    })
+    setNear(true)
     getData()
   }
 
@@ -259,12 +281,15 @@ const SearchView = ({ navigation }) => {
    * although, creating this function would probably be a project on its own
    *
    * this search just uses a query string then uses postgresql "like" to find matches
+   * there is a bug on the api where like requires a '%' at the end to generate the query
+   * this is why the like query is handled like an eq query
+   * it will crash if there is an and and or operator + like query
    * its not bad, but not great either
    */
 
   const onSubmit = (_) => {
     if (searchQuery === '') {
-      handleNearMe()
+      handleEverywhere()
     } else {
       const filters = {
         OR: [
@@ -307,7 +332,69 @@ const SearchView = ({ navigation }) => {
     }
   }
 
-  const applyFilter = (_) => {}
+  const applyFilter = (_) => {
+    const handleFilterCheck = (val) => {
+      return val.value === 'checked'
+    }
+
+    const filters = {
+      AND: [
+        {
+          licensed: {
+            eq: handleFilterCheck(checkBoxes.licensed),
+          },
+        },
+        {
+          bike_parking: {
+            eq: handleFilterCheck(checkBoxes.bike_parking),
+          },
+        },
+        {
+          accepts_bitcoin: {
+            eq: handleFilterCheck(checkBoxes.accepts_bitcoin),
+          },
+        },
+        {
+          accepts_credit_cards: {
+            eq: handleFilterCheck(checkBoxes.accepts_credit_cards),
+          },
+        },
+        {
+          garage_parking: {
+            eq: handleFilterCheck(checkBoxes.garage_parking),
+          },
+        },
+        {
+          street_parking: {
+            eq: handleFilterCheck(checkBoxes.street_parking),
+          },
+        },
+        {
+          dogs_allowed: {
+            eq: handleFilterCheck(checkBoxes.dogs_allowed),
+          },
+        },
+        {
+          wheelchair_accessible: {
+            eq: handleFilterCheck(checkBoxes.wheelchair_accessible),
+          },
+        },
+        {
+          valet_parking: {
+            eq: handleFilterCheck(checkBoxes.valet_parking),
+          },
+        },
+        {
+          flexible_timing: {
+            eq: handleFilterCheck(checkBoxes.flexible_timing),
+          },
+        },
+      ],
+    }
+    setSearchInput({ filters: filters })
+    closeModal()
+    getData()
+  }
 
   return (
     <Body>
@@ -357,12 +444,12 @@ const SearchView = ({ navigation }) => {
           <TabButton
             mr
             android_ripple={{ color: 'white' }}
-            onPress={handleNearMe}
+            onPress={near ? handleNearMe : handleEverywhere}
           >
-            <TabButtonText>near me</TabButtonText>
+            <TabButtonText>{near ? 'near me' : 'all'}</TabButtonText>
           </TabButton>
           <TabButton android_ripple={{ color: 'white' }} onPress={handleSort}>
-            <TabButtonText>distance -</TabButtonText>
+            <TabButtonText>sort</TabButtonText>
           </TabButton>
         </TabButtonContainer>
       </Tab>
@@ -382,13 +469,11 @@ const SearchView = ({ navigation }) => {
       <Portal>
         <FilterDialog
           modal={modal}
-          rating={rating}
-          distance={distance}
-          setRating={setRating}
-          setDistance={setDistance}
           checkBoxes={checkBoxes}
           setCheckBoxes={setCheckBoxes}
           closeModal={closeModal}
+          applyFilter={applyFilter}
+          resetModal={resetModal}
         />
       </Portal>
     </Body>
@@ -397,69 +482,40 @@ const SearchView = ({ navigation }) => {
 
 const FilterDialog = ({
   modal,
-  rating,
-  distance,
-  setRating,
-  setDistance,
   checkBoxes,
   setCheckBoxes,
   closeModal,
+  applyFilter,
+  resetModal,
 }) => {
   return (
     <Dialog visible={modal.visible} onDismiss={closeModal}>
       <Dialog.Content>
-        <View>
-          <Paragraph>Rating: {rating}</Paragraph>
-          <Slider
-            style={{ width: '100%', height: 20 }}
-            step={1}
-            minimumValue={0}
-            maximumValue={5}
-            minimumTrackTintColor="gray"
-            maximumTrackTintColor="gray"
-            value={rating}
-            onSlidingComplete={(v) => setRating(v)}
-          />
-        </View>
-        <View>
-          <Paragraph>Distance within: {distance} miles</Paragraph>
-          <Slider
-            style={{ width: '100%', height: 20 }}
-            step={5}
-            minimumValue={0}
-            maximumValue={30}
-            minimumTrackTintColor="gray"
-            maximumTrackTintColor="gray"
-            value={distance}
-            onSlidingComplete={(v) => setDistance(v)}
-          />
-        </View>
-        <InnerDialogContainer>
-          {Object.keys(checkBoxes).map((key, index) => {
-            return (
-              <View
+        {Object.keys(checkBoxes).map((key, index) => {
+          return (
+            <View
+              key={index}
+              style={{ flexDirection: 'row', alignItems: 'center' }}
+            >
+              <Checkbox
                 key={index}
-                style={{ flexDirection: 'row', alignItems: 'center' }}
-              >
-                <Checkbox
-                  key={index}
-                  status={checkBoxes[key].value}
-                  onPress={() => {
-                    checkBoxes[key].value === 'unchecked'
-                      ? (checkBoxes[key].value = 'checked')
-                      : (checkBoxes[key].value = 'unchecked')
-                    setCheckBoxes({ ...checkBoxes })
-                  }}
-                />
-                <Paragraph>{checkBoxes[key].name}</Paragraph>
-              </View>
-            )
-          })}
-        </InnerDialogContainer>
+                status={checkBoxes[key].value}
+                onPress={() => {
+                  checkBoxes[key].value === 'unchecked'
+                    ? (checkBoxes[key].value = 'checked')
+                    : (checkBoxes[key].value = 'unchecked')
+                  setCheckBoxes({ ...checkBoxes })
+                }}
+              />
+              <Paragraph>{checkBoxes[key].name}</Paragraph>
+            </View>
+          )
+        })}
       </Dialog.Content>
       <Dialog.Actions>
         <Button onPress={closeModal}>Cancel</Button>
-        <Button onPress={closeModal}>Apply</Button>
+        <Button onPress={applyFilter}>Apply</Button>
+        <Button onPress={resetModal}>Reset</Button>
       </Dialog.Actions>
     </Dialog>
   )

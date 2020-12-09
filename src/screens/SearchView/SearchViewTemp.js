@@ -40,6 +40,12 @@ const CHECKBOX_INITIAL_STATE = {
   flexible_timing: { name: 'Flexible Timing', value: 'unchecked' },
 }
 
+/**
+ *
+ *  first iteration of the search view
+ *  should be scrapped
+ *
+ */
 const SearchView = ({ navigation }) => {
   const [viewState, setViewState] = useState(0) //terrible way to do this
   const [location, setLocation] = useState(null)
