@@ -22,6 +22,20 @@ export const GET_PROVIDERS = gql`
         city
         state
         categories
+        bike_parking
+        accepts_bitcoin
+        accepts_credit_cards
+        garage_parking
+        street_parking
+        dogs_allowed
+        valet_parking
+        wheelchair_accessible
+        flexible_timing
+        reviews {
+          id
+          rating
+          text
+        }
       }
     }
   }

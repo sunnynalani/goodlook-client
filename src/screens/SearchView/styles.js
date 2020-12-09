@@ -1,6 +1,11 @@
 import { StyleSheet } from 'react-native'
 import { normalize } from '../../utils'
 
+/**
+ * First iteration of styles
+ * Should be scrapped
+ */
+
 export const styles = StyleSheet.create({
   container: {
     //backgroundColor: '#linear-gradient(#ece9e6, #ffffff)',

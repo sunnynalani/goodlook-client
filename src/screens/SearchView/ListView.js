@@ -170,12 +170,11 @@ const CATEGORIES_MAP = {
  */
 
 const ListView = ({ navigation, providerData, location }) => {
-  const toProviderPage = useCallback(
-    (_) => {
-      navigation.navigate('Book')
-    },
-    [navigation]
-  )
+  const toProviderPage = (providerData) => {
+    navigation.navigate('ProviderView', {
+      data: providerData,
+    })
+  }
 
   return (
     <Body>
@@ -201,10 +200,26 @@ const ListView = ({ navigation, providerData, location }) => {
 
 const ProviderCard = React.memo(
   ({ data, img, index, toProviderPage, location }) => {
+    const dist = distance(
+      location.latitude,
+      location.longitude,
+      data.latitude,
+      data.longitude
+    ).toFixed(1)
+
     return (
       <CardContainer
         android_ripple={{ color: 'gray' }}
-        onPress={toProviderPage}
+        onPress={() =>
+          toProviderPage({
+            providerData: {
+              ...data,
+              img: index,
+              bg: img,
+              dist: dist,
+            },
+          })
+        }
       >
         <ImageEndBackground source={img} />
         <InnerContainer>
@@ -213,7 +228,7 @@ const ProviderCard = React.memo(
         <InnerMiddleContainer>
           <TitleText numberOfLines={1}>{data.name}</TitleText>
           <LocationText numberOfLines={1}>
-            {data.city}, {data.state}
+            {data.city} {data.state && `,${data.state}`}
           </LocationText>
           <RatingContainer>
             {[...Array(data.average_rating)].map((_, i) => (
@@ -236,23 +251,15 @@ const ProviderCard = React.memo(
                 </InnerAttributeContainer>
               )
             })}
-          {!data.licensed && (
+          {data.licensed && (
             <InnerAttributeContainer>
               <FontAwesome name="circle" size={6} color={'black'} />
-              <AttributeText>certified</AttributeText>
+              <AttributeText>licensed</AttributeText>
             </InnerAttributeContainer>
           )}
         </AttributeContainer>
         <InnerEndContainer>
-          <DistanceText>
-            {distance(
-              location.latitude,
-              location.longitude,
-              data.latitude,
-              data.longitude
-            ).toFixed(2)}
-            m
-          </DistanceText>
+          <DistanceText>{dist}m</DistanceText>
         </InnerEndContainer>
       </CardContainer>
     )

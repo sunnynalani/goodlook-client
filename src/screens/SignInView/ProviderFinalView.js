@@ -4,6 +4,7 @@ import { CommonActions } from '@react-navigation/native'
 import { useMutation } from '@apollo/client'
 import { REGISTER_PROVIDER } from './queries'
 import styled from 'styled-components/native'
+import { asProvider } from '../../utils'
 
 const Body = styled.View`
   align-items: center;
@@ -117,6 +118,11 @@ const ProviderFinalView = (props) => {
     location,
   } = props.route.params
 
+  /**
+   * Resets navigation with the specified path history
+   * This is so that the user does not back to this page
+   * once user creates an account
+   */
   const toMain = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -124,10 +130,6 @@ const ProviderFinalView = (props) => {
         routes: [{ name: 'SignIn' }, { name: 'Main' }],
       })
     )
-  }
-
-  const toStart = () => {
-    navigation.navigate('ProviderSignUp')
   }
 
   const signUp = async (_) => {
@@ -166,7 +168,7 @@ const ProviderFinalView = (props) => {
       },
     }).then(
       (res) => {
-        console.log(res)
+        ;(async () => await asProvider())()
         toMain()
       },
       (err) => {

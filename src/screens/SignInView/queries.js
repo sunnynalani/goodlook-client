@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 
-export const LOGIN_CLIENT = gql`
+export const LOGIN = gql`
   mutation loginClient($usernameOrEmail: String!, $password: String!) {
     loginClient(usernameOrEmail: $usernameOrEmail, password: $password) {
       errors {
@@ -11,8 +11,8 @@ export const LOGIN_CLIENT = gql`
         id
         username
         email
-        firstName
-        lastName
+        first_name
+        last_name
       }
     }
     loginProvider(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -29,9 +29,10 @@ export const LOGIN_CLIENT = gql`
     }
   }
 `
-export const REGISTER_CLIENT = gql`
-  mutation registerClient($input: UsernamePasswordInput!) {
-    registerClient(input: $input) {
+
+export const LOGIN_CLIENT_ONLY = gql`
+  mutation loginClientOnly($usernameOrEmail: String!, $password: String!) {
+    loginClient(usernameOrEmail: $usernameOrEmail, password: $password) {
       errors {
         field
         message
@@ -40,8 +41,29 @@ export const REGISTER_CLIENT = gql`
         id
         username
         email
-        firstName
-        lastName
+        first_name
+        last_name
+      }
+    }
+  }
+`
+
+export const REGISTER_CLIENT = gql`
+  mutation registerClient(
+    $input: UsernamePasswordInput!
+    $attributeInput: ClientInput!
+  ) {
+    registerClient(input: $input, attributeInput: $attributeInput) {
+      errors {
+        field
+        message
+      }
+      client {
+        id
+        username
+        email
+        first_name
+        last_name
       }
     }
   }

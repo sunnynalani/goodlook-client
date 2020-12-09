@@ -32,11 +32,11 @@ export const distance = (lat1, lon1, lat2, lon2, unit) => {
   if (lat1 == lat2 && lon1 == lon2) {
     return 0
   } else {
-    var radlat1 = (Math.PI * lat1) / 180
-    var radlat2 = (Math.PI * lat2) / 180
-    var theta = lon1 - lon2
-    var radtheta = (Math.PI * theta) / 180
-    var dist =
+    let radlat1 = (Math.PI * lat1) / 180
+    let radlat2 = (Math.PI * lat2) / 180
+    let theta = lon1 - lon2
+    let radtheta = (Math.PI * theta) / 180
+    let dist =
       Math.sin(radlat1) * Math.sin(radlat2) +
       Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta)
     if (dist > 1) {

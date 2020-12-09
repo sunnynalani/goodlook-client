@@ -70,6 +70,13 @@ const MainText = styled.Text`
   font-family: Comfortaa_500Medium;
 `
 
+/**
+ *
+ * Self explanatory
+ * Forks between provider or client
+ *
+ */
+
 const UserForkView = ({ navigation }) => {
   console.log('userfork')
 
