@@ -11,6 +11,7 @@ import { useMutation } from '@apollo/client'
 import { LOGIN } from './queries'
 import styled from 'styled-components/native'
 import { asClient, asProvider } from '../../utils'
+import AsyncStorage from '@react-native-community/async-storage'
 
 const Body = styled.View`
   align-items: center;
@@ -155,7 +156,14 @@ const LoginView = ({ navigation }) => {
               setError(true)
               return
             } else {
-              ;(async () => await asClient())()
+              ;(async () => {
+                try {
+                  AsyncStorage.clear()
+                  await AsyncStorage.setItem('@user', '2')
+                } catch (error) {
+                  console.error('Unexpected Error')
+                }
+              })()
               toMain()
             }
           } else if (data.loginProvider) {
@@ -163,7 +171,14 @@ const LoginView = ({ navigation }) => {
               setError(true)
               return
             } else {
-              ;(async () => await asProvider())()
+              ;(async () => {
+                try {
+                  AsyncStorage.clear()
+                  await AsyncStorage.setItem('@user', '3')
+                } catch (error) {
+                  console.error('Unexpected Error')
+                }
+              })()
               toMain()
             }
           }

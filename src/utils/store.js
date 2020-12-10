@@ -28,6 +28,7 @@ import {
 
 export const asGuest = async (navigation) => {
   try {
+    AsyncStorage.clear()
     await AsyncStorage.setItem('@user', '1')
     navigation.navigate('Main')
   } catch (error) {
@@ -38,6 +39,7 @@ export const asGuest = async (navigation) => {
 
 export const asClient = async () => {
   try {
+    AsyncStorage.clear()
     await AsyncStorage.setItem('@user', '2')
   } catch (error) {
     console.error('Unexpected Error')
@@ -46,6 +48,7 @@ export const asClient = async () => {
 
 export const asProvider = async () => {
   try {
+    AsyncStorage.clear()
     await AsyncStorage.setItem('@user', '3')
   } catch (error) {
     console.error('Unexpected Error')
@@ -55,6 +58,7 @@ export const asProvider = async () => {
 export const getUserType = async () => {
   try {
     const value = await AsyncStorage.getItem('@user')
+    console.log(value)
     if (value !== null) {
       return value
     } else {

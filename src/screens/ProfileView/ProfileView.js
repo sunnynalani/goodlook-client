@@ -1,11 +1,8 @@
 import React from 'react'
 import { StyleSheet, Text, View, Button, FlatList } from 'react-native'
-import styles from './styles'
 import { Avatar, List } from 'react-native-paper'
 import styled from 'styled-components/native'
-import { CommonActions } from '@react-navigation/native'
-import { useMutation } from '@apollo/client'
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { LOGOUT_CLIENT, ME_CLIENT } from './queries'
 
 const StyledText = styled.Text`

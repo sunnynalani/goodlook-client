@@ -70,10 +70,6 @@ const SignUpView = ({ navigation }) => {
     },
   })
 
-  const signUpButton = () => {
-    navigation.navigate('Sign Up!')
-  }
-
   return (
     <View style={styles.container}>
       <LinearGradient
