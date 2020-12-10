@@ -26,3 +26,25 @@ export const GET_PROVIDER_REVIEWS = gql`
     }
   }
 `
+
+export const ME_CLIENT = gql`
+  query self {
+    meClient {
+      id
+      username
+      first_name
+      last_name
+      reviews {
+        id
+        rating
+        text
+      }
+    }
+  }
+`
+
+export const LOGOUT_CLIENT = gql`
+  mutation logout_client {
+    logoutClient
+  }
+`
