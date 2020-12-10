@@ -1,18 +1,27 @@
 import gql from 'graphql-tag'
 
 export const CREATE_REVIEW = gql`
-  mutation loginClientOnly($usernameOrEmail: String!, $password: String!) {
-    loginClient(usernameOrEmail: $usernameOrEmail, password: $password) {
+  mutation loginClientOnly(
+    $input: ReviewInput!
+    $providerId: Float!
+    $clientId: Float!
+  ) {
+    createReview(input: $input, providerId: $providerId, clientId: $clientId) {
+      success
+      errors
+    }
+  }
+`
+
+export const GET_PROVIDER_REVIEWS = gql`
+  query getProviderReviews($providerId: Float!) {
+    providerReviews(providerId: $providerId) {
       errors {
         field
         message
       }
-      client {
+      reviews {
         id
-        username
-        email
-        first_name
-        last_name
       }
     }
   }

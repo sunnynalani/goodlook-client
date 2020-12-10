@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react'
+import AsyncStorage from '@react-native-community/async-storage'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import { useLazyQuery } from '@apollo/client'
 import { GET_PROVIDERS } from './queries'
@@ -111,12 +112,6 @@ const TabButtonText = styled.Text`
   font-family: Comfortaa_500Medium;
 `
 
-const InnerDialogContainer = styled.ScrollView`
-  background-color: transparent;
-  height: 70%;
-  width: 100%;
-`
-
 const IconButton = styled.TouchableOpacity`
   background-color: transparent;
   height: auto;
@@ -147,6 +142,7 @@ const SearchView = ({ navigation }) => {
   const [viewState, setViewState] = useState(false) //terrible way to do this
   const [location, setLocation] = useState(null)
   const [lockOverlay, setLockOverlay] = useState(false)
+  const [userType, setUserType] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState(null)
   const [within, setWithin] = useState(null)
@@ -171,6 +167,17 @@ const SearchView = ({ navigation }) => {
   useEffect(() => {
     ;(async () => {
       const { status } = await Location.requestPermissionsAsync()
+      try {
+        const value = await AsyncStorage.getItem('@user')
+        if (value !== null) {
+          setUserType(value)
+        } else {
+          setUserType('0')
+        }
+      } catch (err) {
+        console.log(err.message)
+        setUserType('0')
+      }
       if (status !== 'granted') {
         setLockOverlay(true)
       } else {
@@ -462,6 +469,7 @@ const SearchView = ({ navigation }) => {
       ) : (
         <ListView
           navigation={navigation}
+          userType={userType}
           providerData={providerData}
           location={location}
         />

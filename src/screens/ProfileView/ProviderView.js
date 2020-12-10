@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { Dimensions } from 'react-native'
 import * as Location from 'expo-location'
 import Slider from '@react-native-community/slider'
 import { List } from 'react-native-paper'
 import styled from 'styled-components/native'
 import { bgImages, avatarImages, getUserType } from '../../utils'
+import { Modal, TextInput } from 'react-native-paper'
+import { CREATE_REVIEW } from './queries'
 
 import {
   Button,
@@ -18,49 +20,11 @@ import {
 } from '../../components'
 
 const Body = styled.ScrollView`
-  background-color: transparent;
-`
-
-const ImageBackground = styled.Image`
-  background-color: transparent;
-  position: absolute;
-  height: 160px;
-  width: 100%;
-  opacity: 0.1;
-  border-top-left-radius: 40px;
-  border-top-right-radius: 40px;
-`
-
-const HeaderContainer = styled.View`
-  margin-top: 35px;
-  background-color: transparent;
-  height: 140px;
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  border-top-left-radius: 40px;
-  border-top-right-radius: 40px;
-`
-
-const BodyContainer = styled.ScrollView`
   background-color: white;
+  height: auto;
+  width: 100%;
 `
 
-const TitleContainer = styled.View`
-  background-color: transparent;
-  margin-left: 10px;
-  height: auto;
-  justify-content: center;
-  width: 50%;
-`
-
-const Title = styled.Text`
-  color: black;
-  height: auto;
-  letter-spacing: -0.2px;
-  font-size: 30px;
-  font-family: Comfortaa_700Bold;
-`
 const ErrorText = styled.Text`
   color: red;
   height: auto;
@@ -69,85 +33,144 @@ const ErrorText = styled.Text`
   margin-bottom: 20px;
 `
 
+const CardContainer = styled.View`
+  background-color: white;
+  margin-top: 40px;
+  height: 110px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-direction: row;
+  border-bottom-width: 0.5px;
+  border-bottom-color: #d3d3d3;
+  overflow: hidden;
+`
+
 const Avatar = styled.Image`
   background-color: transparent;
-  height: 100px;
-  width: 100px;
-  border-radius: 50px;
+  height: 80px;
+  width: 80px;
+  border-radius: 40px;
 `
 
 const InnerContainer = styled.View`
   background-color: transparent;
-  height: auto;
-  display: flex;
+  height: 100px;
   align-items: center;
   justify-content: center;
-  margin-left: 5%;
-  width: auto;
+  width: 30%;
 `
 
 const InnerMiddleContainer = styled.View`
   background-color: transparent;
   height: 100px;
-  align-items: center;
   justify-content: center;
-  width: 34%;
-`
-
-const AttributeContainer = styled.View`
-  background-color: transparent;
-  height: 100px;
-  align-items: center;
-  justify-content: center;
-  width: 27%;
+  width: 41%;
 `
 
 const InnerEndContainer = styled.View`
   background-color: transparent;
-  height: auto;
-  margin-left: auto;
-  margin-right: 5%;
-  width: 20%;
+  height: 100px;
+  align-items: center;
+  justify-content: center
+  width: 29%;
+`
+
+const ImageEndBackground = styled.Image`
+  background-color: transparent;
+  height: 100%;
+  right: 0px;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  opacity: 0.1;
 `
 
 const DistanceText = styled.Text`
   text-align: center;
   color: black;
   width: auto;
-  font-size: 40px;
+  font-size: 30px;
+  font-family: Comfortaa_500Medium;
+`
+
+const TitleText = styled.Text`
+  color: black;
+  width: auto;
+  font-size: 30px;
   font-family: Comfortaa_700Bold;
 `
 
 const LocationText = styled.Text`
   color: gray;
   width: auto;
-  font-size: 16px;
-  margin-bottom: 10px;
-  font-family: Comfortaa_500Medium;
+  font-size: 15px;
+  margin-bottom: 8%;
+  font-family: Comfortaa_700Bold;
 `
 
-const RatingContainer = styled.View`
+const ButtonContainer = styled.View`
+  background-color: white;
+  height: 52px;
+  display: flex;
   flex-direction: row;
-  margin-bottom: 8px;
-  width: auto;
-  height: auto;
-`
-
-const InnerAttributeContainer = styled.View`
-  flex-direction: row;
-  width: 100%;
-  height: auto;
   align-items: center;
-  padding-left: 15%;
+  justify-content: center;
+  width: 100%;
 `
 
-const AttributeText = styled.Text`
+const HeaderButton = styled.Pressable`
+  background-color: white;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  border: 0.5px solid black;
+`
+
+const ButtonText = styled.Text`
   text-align: center;
   color: black;
+  width: 100%;
+  font-size: 18px;
+  font-family: Comfortaa_500Medium;
+`
+
+const LogoutButton = styled.Pressable`
+  background-color: black;
+  height: 22px;
+  border-radius: 6px;
+  justify-content: center;
+  width: 80px;
+`
+
+const LogoutText = styled.Text`
+  text-align: center;
+  color: white;
+  width: auto;
+  margin-bottom: 6px;
+  text-align: center;
   font-size: 12px;
   font-family: Comfortaa_500Medium;
-  margin-bottom: 3px;
-  margin-left: 5px;
+`
+
+const ModalButton = styled.Pressable`
+  background-color: black;
+  height: 52px;
+  border-radius: 6px;
+  margin-top: 15px;
+  justify-content: center;
+  width: 100%;
+`
+
+const ModalButtonText = styled.Text`
+  text-align: center;
+  color: white;
+  width: auto;
+  margin-bottom: 6px;
+  text-align: center;
+  font-size: 18px;
+  font-family: Comfortaa_500Medium;
 `
 
 const ATTRIBUTES = {
@@ -194,93 +217,159 @@ const ATTRIBUTES = {
 }
 
 const ProviderView = (props) => {
+  const data = props.route.params.data.providerData
   const [expanded, setExpanded] = useState(true)
-  const [rating, setRating] = useState(0)
+  const [visible, setVisible] = useState(false)
+  const [rating, setRating] = useState('')
   const [text, setText] = useState('')
-  const userType = (async () => await getUserType())()
-  const { providerData } = props.route.params.data
+  const [reviews, setReiews] = useState([...data.reviews])
+  const [createReview] = useMutation(CREATE_REVIEW, {
+    onCompleted: () => {
+      console.log('working')
+      reviews.push([
+        ...reviews,
+        {
+          rating: rating,
+          text: text,
+        },
+      ])
+    },
+  })
 
-  const handlePress = () => setExpanded(!expanded)
+  const showModal = () => setVisible(true)
+  const hideModal = () => setVisible(false)
+  const modalStyle = {
+    backgroundColor: 'white',
+    padding: 20,
+    width: '90%',
+    alignSelf: 'center',
+  }
 
   return (
     <Body>
-      <HeaderContainer>
-        <ImageBackground source={bgImages[providerData.bg]} />
+      <CardContainer>
+        <ImageEndBackground source={data.bg} />
         <InnerContainer>
-          <Avatar source={avatarImages[providerData.img]} />
+          <Avatar source={avatarImages[data.img]} />
         </InnerContainer>
-        <TitleContainer>
-          <Title>{providerData.name}</Title>
+        <InnerMiddleContainer>
+          <TitleText numberOfLines={1}>{data.name}</TitleText>
           <LocationText numberOfLines={1}>
-            {providerData.city} {providerData.state && `,${providerData.state}`}
+            {data.city} {data.state && `,${data.state}`}
           </LocationText>
-          <RatingContainer>
-            {[...Array(providerData.average_rating)].map((_, i) => (
-              <FontAwesome
-                key={i}
-                name="star"
-                size={18}
-                color={'black'}
-                style={{
-                  marginRight: 8,
-                }}
-              />
-            ))}
-            {[...Array(5 - providerData.average_rating)].map((_, i) => (
-              <FontAwesome
-                key={i}
-                name="star-o"
-                size={18}
-                color={'black'}
-                style={{
-                  marginRight: 8,
-                }}
-              />
-            ))}
-          </RatingContainer>
-        </TitleContainer>
+        </InnerMiddleContainer>
         <InnerEndContainer>
-          <DistanceText>{providerData.dist}m</DistanceText>
+          <LogoutButton
+            onPress={() => {
+              console.log('sending')
+            }}
+            android_ripple={{ color: 'white' }}
+          >
+            <LogoutText>log out</LogoutText>
+          </LogoutButton>
+          <DistanceText>{data.dist}m</DistanceText>
         </InnerEndContainer>
-      </HeaderContainer>
-      <BodyContainer>
-        <List.Section>
-          <List.Accordion
-            title="Basic information"
-            left={(props) => <List.Icon {...props} icon="equal" />}
+      </CardContainer>
+      {(data.userType === '1' || data.userType === '0') && (
+        <ButtonContainer>
+          <HeaderButton
+            style={{ borderRightWidth: 0 }}
+            android_ripple={{ color: 'black' }}
+            onPress={showModal}
           >
-            {Object.keys(ATTRIBUTES).map((key, index) => {
-              if (providerData[key]) {
-                return (
-                  <List.Item
-                    key={index}
-                    title={ATTRIBUTES[key].name}
-                    description={ATTRIBUTES[key].description}
-                    left={(props) => <List.Icon {...props} icon="star" />}
-                  />
-                )
-              }
-            })}
-          </List.Accordion>
-          <List.Accordion
-            title="Details"
-            left={(props) => <List.Icon {...props} icon="equal" />}
+            <ButtonText>review</ButtonText>
+          </HeaderButton>
+          <HeaderButton
+            android_ripple={{ color: 'black' }}
+            onPress={() => {
+              console.log('test')
+            }}
           >
-            {Object.keys(ATTRIBUTES).map((key, index) => {
-              if (providerData[key]) {
-                return (
-                  <List.Item
-                    key={index}
-                    title={ATTRIBUTES[key].name}
-                    description={ATTRIBUTES[key].description}
-                    left={(props) => <List.Icon {...props} icon="star" />}
-                  />
-                )
-              }
-            })}
-          </List.Accordion>
-        </List.Section>
-      </BodyContainer>
+            <ButtonText>favorite</ButtonText>
+          </HeaderButton>
+        </ButtonContainer>
+      )}
+      <List.Section>
+        <List.Accordion
+          title="Basic information"
+          left={(props) => <List.Icon {...props} icon="equal" />}
+        >
+          {data.country && (
+            <List.Item title={'Country'} description={data.country} />
+          )}
+          {data.state && <List.Item title={'State'} description={data.state} />}
+          {data.city && <List.Item title={'City'} description={data.city} />}
+        </List.Accordion>
+        <List.Accordion
+          title="Details"
+          left={(props) => <List.Icon {...props} icon="equal" />}
+        >
+          {Object.keys(ATTRIBUTES).map((key, index) => {
+            if (data[key]) {
+              return (
+                <List.Item
+                  key={index}
+                  title={ATTRIBUTES[key].title}
+                  description={ATTRIBUTES[key].description}
+                />
+              )
+            }
+          })}
+        </List.Accordion>
+        <List.Accordion
+          title="Services"
+          left={(props) => <List.Icon {...props} icon="equal" />}
+        >
+          {data.categories.map((category, index) => {
+            return <List.Item key={index} title={category} />
+          })}
+        </List.Accordion>
+        <List.Accordion
+          title="Reviews"
+          left={(props) => <List.Icon {...props} icon="equal" />}
+        >
+          {reviews.map((review, index) => {
+            return (
+              <List.Item
+                key={index}
+                title={`Anonymous user rated ${review.rating}`}
+                description={review.text}
+              />
+            )
+          })}
+          {reviews.length === 0 && (
+            <List.Item description={'This establishment has no reviews'} />
+          )}
+        </List.Accordion>
+      </List.Section>
+      <Portal>
+        <Modal
+          visible={visible}
+          onDismiss={hideModal}
+          contentContainerStyle={modalStyle}
+        >
+          <ButtonText>Write your review</ButtonText>
+          <TextInput
+            label=" "
+            value={text}
+            underlineColor={'black'}
+            onChangeText={(text) => setText(text)}
+            multiline={true}
+            style={{
+              marginTop: 10,
+              height: 200,
+            }}
+          />
+          <ModalButton
+            onPress={() => {
+              console.log('sending')
+            }}
+            android_ripple={{ color: 'white' }}
+          >
+            <ModalButtonText>send</ModalButtonText>
+          </ModalButton>
+        </Modal>
+      </Portal>
     </Body>
   )
 }

@@ -19,6 +19,7 @@ export const GET_PROVIDERS = gql`
         latitude
         average_rating
         licensed
+        country
         city
         state
         categories
