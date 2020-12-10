@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-community/async-storage'
-import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
+import { FontAwesome } from '@expo/vector-icons'
 import { useLazyQuery } from '@apollo/client'
 import { GET_PROVIDERS } from './queries'
 import { Dimensions } from 'react-native'
 import * as Location from 'expo-location'
 import MapViewContainer from './MapView'
 import ListView from './ListView'
-import Slider from '@react-native-community/slider'
 import styled from 'styled-components/native'
 import { distance as getDistance } from '../../utils'
 import {
@@ -172,11 +171,11 @@ const SearchView = ({ navigation }) => {
         if (value !== null) {
           setUserType(value)
         } else {
-          setUserType('0')
+          setUserType('1')
         }
       } catch (err) {
         console.log(err.message)
-        setUserType('0')
+        setUserType('1')
       }
       if (status !== 'granted') {
         setLockOverlay(true)

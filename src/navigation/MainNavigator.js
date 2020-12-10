@@ -2,7 +2,7 @@ import React from 'react'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import SearchNavigator from './SearchNavigator'
-import ProfileView from '../screens/ProfileView/ProfileView'
+import { ProfileView } from '../screens/ProfileView'
 import BookView from '../screens/BookView/BookView'
 import NotificationView from '../screens/NotificationView/NotificationView'
 

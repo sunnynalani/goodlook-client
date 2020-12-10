@@ -8,7 +8,15 @@ import { List } from 'react-native-paper'
 import styled from 'styled-components/native'
 import { bgImages, avatarImages, getUserType } from '../../utils'
 import { Modal, TextInput } from 'react-native-paper'
-import { CREATE_REVIEW } from './queries'
+import {
+  CREATE_REVIEW,
+  LOGOUT_CLIENT,
+  ME_CLIENT,
+  GET_PROVIDER_REVIEWS,
+  GET_CLIENT_FAVORITES,
+  ADD_FAVORITES,
+  UNFAVORITE,
+} from './queries'
 
 import {
   Button,
@@ -216,25 +224,135 @@ const ATTRIBUTES = {
   },
 }
 
+const DEFAULT_CLIENT = {
+  client: {
+    id: -1,
+    first_name: 'Anonymous',
+    last_name: 'User',
+  },
+}
+
 const ProviderView = (props) => {
   const data = props.route.params.data.providerData
   const [expanded, setExpanded] = useState(true)
   const [visible, setVisible] = useState(false)
-  const [rating, setRating] = useState('')
+  const [rating, setRating] = useState(0)
   const [text, setText] = useState('')
-  const [reviews, setReiews] = useState([...data.reviews])
+  const [reviews, setReviews] = useState([])
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [client, setClient] = useState(DEFAULT_CLIENT)
+
+  const [getClient] = useLazyQuery(ME_CLIENT, {
+    fetchPolicy: 'network-only',
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (res) => {
+      setClient(res.meClient)
+    },
+  })
+
+  const [getClientFavorites] = useLazyQuery(GET_CLIENT_FAVORITES, {
+    variables: {
+      clientId: Number(client.id),
+    },
+    fetchPolicy: 'network-only',
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (res) => {
+      if (res.favorites.find((fav) => fav.id === data.id)) {
+        setIsFavorite(true)
+      }
+    },
+  })
+
+  const [getReviews] = useLazyQuery(GET_PROVIDER_REVIEWS, {
+    variables: {
+      providerId: Number(data.id),
+    },
+    fetchPolicy: 'network-only',
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (res) => {
+      setReviews([...res.providerReviews.reviews])
+    },
+  })
+
   const [createReview] = useMutation(CREATE_REVIEW, {
+    variables: {
+      input: {
+        rating: Number(rating),
+        text: text,
+      },
+      providerId: Number(data.id),
+      clientId: Number(client.id),
+    },
+    onError: (err) => {
+      console.log(err.message)
+    },
     onCompleted: () => {
-      console.log('working')
-      reviews.push([
+      setReviews([
         ...reviews,
         {
+          client: {
+            first_name: client.first_name,
+            last_name: client.last_name,
+          },
           rating: rating,
           text: text,
         },
       ])
     },
   })
+
+  const [addFavorite] = useMutation(ADD_FAVORITES)
+
+  const [unfavorite] = useMutation(UNFAVORITE)
+
+  const [logout] = useMutation(LOGOUT_CLIENT, {
+    onCompleted: () => {
+      navigation.navigate('SignIn')
+    },
+  })
+
+  useEffect(() => {
+    ;(async () => {
+      if (data.userType === '2') {
+        await getClient()
+      }
+      await getReviews()
+    })()
+  }, [])
+
+  useEffect(() => {
+    ;(async () => {
+      await getClientFavorites()
+    })()
+  }, [client])
+
+  const handleFavorite = (_) => {
+    if (isFavorite) {
+      unfavorite({
+        variables: {
+          clientId: Number(client.id),
+          providerId: Number(data.id),
+        },
+      }).then((res) => {
+        setIsFavorite(false)
+      })
+    } else {
+      addFavorite({
+        variables: {
+          clientId: Number(client.id),
+          providerId: Number(data.id),
+        },
+      }).then((res) => {
+        setIsFavorite(true)
+      })
+    }
+  }
 
   const showModal = () => setVisible(true)
   const hideModal = () => setVisible(false)
@@ -259,18 +377,20 @@ const ProviderView = (props) => {
           </LocationText>
         </InnerMiddleContainer>
         <InnerEndContainer>
-          <LogoutButton
-            onPress={() => {
-              console.log('sending')
-            }}
-            android_ripple={{ color: 'white' }}
-          >
-            <LogoutText>log out</LogoutText>
-          </LogoutButton>
+          {data.userType === '3' && data.providerId === data.id && (
+            <LogoutButton
+              onPress={() => {
+                logout()
+              }}
+              android_ripple={{ color: 'white' }}
+            >
+              <LogoutText>log out</LogoutText>
+            </LogoutButton>
+          )}
           <DistanceText>{data.dist}m</DistanceText>
         </InnerEndContainer>
       </CardContainer>
-      {(data.userType === '1' || data.userType === '0') && (
+      {data.userType === '2' && (
         <ButtonContainer>
           <HeaderButton
             style={{ borderRightWidth: 0 }}
@@ -281,11 +401,9 @@ const ProviderView = (props) => {
           </HeaderButton>
           <HeaderButton
             android_ripple={{ color: 'black' }}
-            onPress={() => {
-              console.log('test')
-            }}
+            onPress={handleFavorite}
           >
-            <ButtonText>favorite</ButtonText>
+            <ButtonText>{isFavorite ? 'unfavorite' : 'favorite'}</ButtonText>
           </HeaderButton>
         </ButtonContainer>
       )}
@@ -329,10 +447,11 @@ const ProviderView = (props) => {
           left={(props) => <List.Icon {...props} icon="equal" />}
         >
           {reviews.map((review, index) => {
+            const fullName = `${review.client.first_name} ${review.client.last_name}`
             return (
               <List.Item
                 key={index}
-                title={`Anonymous user rated ${review.rating}`}
+                title={`${fullName} gave a rating of ${review.rating}`}
                 description={review.text}
               />
             )
@@ -348,7 +467,18 @@ const ProviderView = (props) => {
           onDismiss={hideModal}
           contentContainerStyle={modalStyle}
         >
-          <ButtonText>Write your review</ButtonText>
+          <ButtonText>your rating: {rating}</ButtonText>
+          <Slider
+            style={{ width: '100%', height: 40 }}
+            minimumValue={0}
+            maximumValue={5}
+            step={1}
+            value={rating}
+            onSlidingComplete={(val) => setRating(val)}
+            minimumTrackTintColor="black"
+            maximumTrackTintColor="black"
+          />
+          <ButtonText>write your review</ButtonText>
           <TextInput
             label=" "
             value={text}
@@ -362,7 +492,8 @@ const ProviderView = (props) => {
           />
           <ModalButton
             onPress={() => {
-              console.log('sending')
+              createReview()
+              hideModal()
             }}
             android_ripple={{ color: 'white' }}
           >
