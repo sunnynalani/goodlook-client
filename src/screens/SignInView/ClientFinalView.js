@@ -147,7 +147,18 @@ const ClientFinalView = (props) => {
       },
     }).then(
       (res) => {
-        ;(async () => await asClient())()
+        ;(async () => {
+          try {
+            await AsyncStorage.clear()
+            await AsyncStorage.setItem('@user', '2')
+            await AsyncStorage.setItem(
+              '@client',
+              res.data.registerClient.client.id
+            )
+          } catch (error) {
+            console.error('Unexpected Error')
+          }
+        })()
         toMain()
       },
       (err) => {

@@ -154,27 +154,36 @@ const LoginView = ({ navigation }) => {
           if (data.loginClient) {
             if (data.loginClient.errors) {
               setError(true)
-              return
             } else {
               ;(async () => {
                 try {
-                  AsyncStorage.clear()
+                  await AsyncStorage.clear()
                   await AsyncStorage.setItem('@user', '2')
+                  await AsyncStorage.setItem(
+                    '@client',
+                    data.loginClient.client.id
+                  )
                 } catch (error) {
                   console.error('Unexpected Error')
                 }
               })()
               toMain()
             }
-          } else if (data.loginProvider) {
-            if (data.loginProvider.err) {
+          }
+          if (data.loginProvider) {
+            console.log('yes')
+            if (data.loginProvider.errors) {
+              console.log('yes')
               setError(true)
-              return
             } else {
               ;(async () => {
                 try {
-                  AsyncStorage.clear()
+                  await AsyncStorage.clear()
                   await AsyncStorage.setItem('@user', '3')
+                  await AsyncStorage.setItem(
+                    '@provider',
+                    data.loginProvider.provider.id
+                  )
                 } catch (error) {
                   console.error('Unexpected Error')
                 }

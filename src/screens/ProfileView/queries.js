@@ -53,6 +53,24 @@ export const ME_CLIENT = gql`
   }
 `
 
+export const GET_CLIENT = gql`
+  query client($clientId: Float!) {
+    client(clientId: $clientId) {
+      client {
+        id
+        username
+        first_name
+        last_name
+        reviews {
+          id
+          rating
+          text
+        }
+      }
+    }
+  }
+`
+
 export const GET_CLIENT_FAVORITES = gql`
   query getFavorites($clientId: Float!) {
     favorites(clientId: $clientId) {

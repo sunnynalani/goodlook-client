@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-community/async-storage'
 import { FontAwesome } from '@expo/vector-icons'
 import { useLazyQuery } from '@apollo/client'
-import { GET_PROVIDERS } from './queries'
+import { GET_PROVIDERS, ME } from './queries'
 import { Dimensions } from 'react-native'
 import * as Location from 'expo-location'
 import MapViewContainer from './MapView'
@@ -154,6 +154,16 @@ const SearchView = ({ navigation }) => {
     sortVisible: false,
   })
 
+  const [testMe] = useLazyQuery(ME, {
+    fetchPolicy: 'network-only',
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (res) => {
+      console.log(res)
+    },
+  })
+
   const [getData] = useLazyQuery(GET_PROVIDERS, {
     variables: searchInput,
     fetchPolicy: 'network-only',
@@ -182,8 +192,8 @@ const SearchView = ({ navigation }) => {
       } else {
         const userLocation = await Location.getCurrentPositionAsync({})
         const withinInput = {
-          longitude: userLocation.coords.longitude,
-          latitude: userLocation.coords.latitude,
+          longitude: Number(userLocation.coords.longitude),
+          latitude: Number(userLocation.coords.latitude),
           distance: DEFAULT_DISTANCE,
         }
         const inputs = {

@@ -90,3 +90,9 @@ export const REGISTER_PROVIDER = gql`
     }
   }
 `
+
+export const LOGOUT_CLIENT = gql`
+  mutation logout_client {
+    logoutClient
+  }
+`
