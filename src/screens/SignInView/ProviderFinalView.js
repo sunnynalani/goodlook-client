@@ -168,7 +168,18 @@ const ProviderFinalView = (props) => {
       },
     }).then(
       (res) => {
-        ;(async () => await asProvider())()
+        ;(async () => {
+          try {
+            await AsyncStorage.clear()
+            await AsyncStorage.setItem('@user', '2')
+            await AsyncStorage.setItem(
+              '@provider',
+              res.data.registerProvider.provider.id
+            )
+          } catch (error) {
+            console.error('Unexpected Error')
+          }
+        })()
         toMain()
       },
       (err) => {

@@ -1,6 +1,5 @@
 import gql from 'graphql-tag'
 
-//haven't implemented filter and sort yet...
 export const GET_PROVIDERS = gql`
   query getProviders(
     $within: distanceInput
@@ -38,6 +37,17 @@ export const GET_PROVIDERS = gql`
           text
         }
       }
+    }
+  }
+`
+
+export const ME = gql`
+  query self {
+    meClient {
+      id
+    }
+    meProvider {
+      id
     }
   }
 `

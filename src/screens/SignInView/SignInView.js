@@ -1,10 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Text, View } from '../../components'
-import { Pressable } from 'react-native'
 import styled from 'styled-components/native'
 import { asGuest } from '../../utils'
 import v0_42 from '../../components/assests/images/v0_42.png'
+import AsyncStorage from '@react-native-community/async-storage'
 
 const Body = styled.View`
   align-items: center;
@@ -37,7 +36,7 @@ const BackgroundImage = styled.Image`
 const Title = styled.Text`
   background-color: transparent;
   height: 100%;
-  left: 72px;
+  left: 90px;
   letter-spacing: -0.72px;
   position: absolute;
   text-align: center;
@@ -108,6 +107,14 @@ const ButtonText = styled.Text`
 `
 
 const SignInView = ({ navigation }) => {
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear()
+    } catch (error) {
+      console.error('Unexpected Error')
+    }
+  }
+
   const toLogin = () => {
     navigation.navigate('Login')
   }
@@ -115,6 +122,8 @@ const SignInView = ({ navigation }) => {
   const toSignUp = () => {
     navigation.navigate('UserFork')
   }
+
+  clearStorage()
 
   return (
     <Body>

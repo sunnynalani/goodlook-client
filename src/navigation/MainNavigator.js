@@ -2,6 +2,7 @@ import React from 'react'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import SearchNavigator from './SearchNavigator'
+import ProfileNavigator from './ProfileNavigator'
 import { ProfileView } from '../screens/ProfileView'
 import BookView from '../screens/BookView/BookView'
 import NotificationView from '../screens/NotificationView/NotificationView'
@@ -42,7 +43,7 @@ export const MainNavigator = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileView}
+        component={ProfileNavigator}
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (

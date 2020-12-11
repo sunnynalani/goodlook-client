@@ -1,9 +1,4 @@
 import AsyncStorage from '@react-native-community/async-storage'
-import {
-  GUEST_KEY,
-  CLIENT_KEY,
-  PROVIDER_KEY,
-} from '../components/assests/constants'
 
 /**
  *
@@ -28,7 +23,7 @@ import {
 
 export const asGuest = async (navigation) => {
   try {
-    AsyncStorage.clear()
+    await AsyncStorage.clear()
     await AsyncStorage.setItem('@user', '1')
     navigation.navigate('Main')
   } catch (error) {
@@ -39,7 +34,7 @@ export const asGuest = async (navigation) => {
 
 export const asClient = async () => {
   try {
-    AsyncStorage.clear()
+    await AsyncStorage.clear()
     await AsyncStorage.setItem('@user', '2')
   } catch (error) {
     console.error('Unexpected Error')
@@ -48,7 +43,7 @@ export const asClient = async () => {
 
 export const asProvider = async () => {
   try {
-    AsyncStorage.clear()
+    await AsyncStorage.clear()
     await AsyncStorage.setItem('@user', '3')
   } catch (error) {
     console.error('Unexpected Error')

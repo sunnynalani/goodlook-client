@@ -13,12 +13,11 @@ const StyledText = styled.Text`
   margin-bottom: 6px;
   font-family: Comfortaa_500Medium;
 `
-const ButtonContainer = styled.View`  
+const ButtonContainer = styled.View`
   height: auto;
   justify-content: center;
   align-items: center;
-  width: 100%;      
-}
+  width: 100%;
 `
 const MainButton = styled.Pressable`
   background-color: black;
@@ -41,6 +40,7 @@ const MainText = styled.Text`
 `
 
 const ProfileView = ({ navigation }) => {
+  console.log('rendered')
   const loggingOut = () => {
     navigation.navigate('SignIn')
   }

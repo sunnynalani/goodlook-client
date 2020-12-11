@@ -10,13 +10,13 @@ import { bgImages, avatarImages, getUserType } from '../../utils'
 import { Modal, TextInput } from 'react-native-paper'
 import {
   CREATE_REVIEW,
-  LOGOUT_CLIENT,
-  ME_CLIENT,
+  GET_CLIENT,
   GET_PROVIDER_REVIEWS,
   GET_CLIENT_FAVORITES,
   ADD_FAVORITES,
   UNFAVORITE,
 } from './queries'
+import AsyncStorage from '@react-native-community/async-storage'
 
 import {
   Button,
@@ -31,14 +31,6 @@ const Body = styled.ScrollView`
   background-color: white;
   height: auto;
   width: 100%;
-`
-
-const ErrorText = styled.Text`
-  color: red;
-  height: auto;
-  font-size: 12px;
-  font-family: Comfortaa_500Medium;
-  margin-bottom: 20px;
 `
 
 const CardContainer = styled.View`
@@ -240,21 +232,25 @@ const ProviderView = (props) => {
   const [text, setText] = useState('')
   const [reviews, setReviews] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
+  const [clientId, setClientId] = useState(null)
   const [client, setClient] = useState(DEFAULT_CLIENT)
 
-  const [getClient] = useLazyQuery(ME_CLIENT, {
+  const [getClient] = useLazyQuery(GET_CLIENT, {
+    variables: {
+      clientId: Number(clientId),
+    },
     fetchPolicy: 'network-only',
     onError: (err) => {
       console.log(err.message)
     },
     onCompleted: (res) => {
-      setClient(res.meClient)
+      setClient(res.client.client)
     },
   })
 
   const [getClientFavorites] = useLazyQuery(GET_CLIENT_FAVORITES, {
     variables: {
-      clientId: Number(client.id),
+      clientId: Number(clientId),
     },
     fetchPolicy: 'network-only',
     onError: (err) => {
@@ -287,7 +283,7 @@ const ProviderView = (props) => {
         text: text,
       },
       providerId: Number(data.id),
-      clientId: Number(client.id),
+      clientId: Number(clientId),
     },
     onError: (err) => {
       console.log(err.message)
@@ -311,16 +307,23 @@ const ProviderView = (props) => {
 
   const [unfavorite] = useMutation(UNFAVORITE)
 
-  const [logout] = useMutation(LOGOUT_CLIENT, {
-    onCompleted: () => {
-      navigation.navigate('SignIn')
-    },
-  })
+  const logout = (_) => {
+    props.navigation.navigate('SignIn')
+  }
 
   useEffect(() => {
     ;(async () => {
       if (data.userType === '2') {
-        await getClient()
+        try {
+          const value = await AsyncStorage.getItem('@client')
+          if (value !== null) {
+            setClientId(Number(value))
+          } else {
+            setClient(null)
+          }
+        } catch (err) {
+          console.log(err.message)
+        }
       }
       await getReviews()
     })()
@@ -329,14 +332,15 @@ const ProviderView = (props) => {
   useEffect(() => {
     ;(async () => {
       await getClientFavorites()
+      await getClient()
     })()
-  }, [client])
+  }, [clientId])
 
   const handleFavorite = (_) => {
     if (isFavorite) {
       unfavorite({
         variables: {
-          clientId: Number(client.id),
+          clientId: Number(clientId),
           providerId: Number(data.id),
         },
       }).then((res) => {
@@ -345,7 +349,7 @@ const ProviderView = (props) => {
     } else {
       addFavorite({
         variables: {
-          clientId: Number(client.id),
+          clientId: Number(clientId),
           providerId: Number(data.id),
         },
       }).then((res) => {
@@ -371,19 +375,18 @@ const ProviderView = (props) => {
           <Avatar source={avatarImages[data.img]} />
         </InnerContainer>
         <InnerMiddleContainer>
-          <TitleText numberOfLines={1}>{data.name}</TitleText>
+          <TitleText numberOfLines={1}>
+            {data.name ? data.name : 'Unlisted'}
+          </TitleText>
           <LocationText numberOfLines={1}>
-            {data.city} {data.state && `,${data.state}`}
+            {data.city && data.state
+              ? `${data.city}, ${data.state}`
+              : 'Unlisted'}
           </LocationText>
         </InnerMiddleContainer>
         <InnerEndContainer>
           {data.userType === '3' && data.providerId === data.id && (
-            <LogoutButton
-              onPress={() => {
-                logout()
-              }}
-              android_ripple={{ color: 'white' }}
-            >
+            <LogoutButton onPress={logout} android_ripple={{ color: 'white' }}>
               <LogoutText>log out</LogoutText>
             </LogoutButton>
           )}
@@ -412,11 +415,18 @@ const ProviderView = (props) => {
           title="Basic information"
           left={(props) => <List.Icon {...props} icon="equal" />}
         >
-          {data.country && (
-            <List.Item title={'Country'} description={data.country} />
-          )}
-          {data.state && <List.Item title={'State'} description={data.state} />}
-          {data.city && <List.Item title={'City'} description={data.city} />}
+          <List.Item
+            title={'Country'}
+            description={data.country ? data.country : 'Unlisted'}
+          />
+          <List.Item
+            title={'State'}
+            description={data.state ? data.state : 'Unlisted'}
+          />
+          <List.Item
+            title={'City'}
+            description={data.city ? data.city : 'Unlisted'}
+          />
         </List.Accordion>
         <List.Accordion
           title="Details"
@@ -427,8 +437,8 @@ const ProviderView = (props) => {
               return (
                 <List.Item
                   key={index}
-                  title={ATTRIBUTES[key].title}
-                  description={ATTRIBUTES[key].description}
+                  title={`${ATTRIBUTES[key].title}`}
+                  description={`${ATTRIBUTES[key].description}`}
                 />
               )
             }
