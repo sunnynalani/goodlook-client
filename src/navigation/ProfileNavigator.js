@@ -3,7 +3,12 @@ import AsyncStorage from '@react-native-community/async-storage'
 import { createStackNavigator } from '@react-navigation/stack'
 import ProfileView from '../screens/ProfileView/ProfileView'
 import ProviderView from '../screens/ProfileView/ProviderView'
-import { GET_PROVIDER } from './queries'
+import {
+  GET_PROVIDER,
+  GET_CLIENT,
+  GET_CLIENT_REVIEWS,
+  GET_CLIENT_FAVORITES,
+} from './queries'
 import styled from 'styled-components/native'
 import { useLazyQuery } from '@apollo/client'
 import { bgImages, avatarImages } from '../utils'
@@ -24,14 +29,13 @@ const TitleContainer = styled.View`
   justify-content: center;
   width: 100%;
   margin-bottom: 50%;
-  margin-top: 10%;
+  margin-top: 40%;
 `
 
 const Title = styled.Text`
   color: black;
   height: auto;
-  margin-top: 15%;
-  margin-left: 10%;
+  text-align: center;
   letter-spacing: -0.54px;
   font-size: 36px;
   font-family: Comfortaa_500Medium;
@@ -84,7 +88,6 @@ const TermsContainer = styled.View`
 const Terms = styled.Text`
   color: black;
   text-align: center;
-  margin-left: 5%;
   width: 95%;
   font-size: 13px;
   font-family: Comfortaa_500Medium;
@@ -94,19 +97,17 @@ const Stack = createStackNavigator()
 
 export const ProfileNavigator = (props) => {
   const [initialView, setInitialView] = useState(null)
-  console.log('test')
 
   useEffect(() => {
     ;(async () => {
       try {
         const value = await AsyncStorage.getItem('@user')
-        console.log(value)
         if (value === '1') {
           setInitialView('Guest')
         } else if (value === '2') {
           setInitialView('ProfileView')
         } else if (value === '3') {
-          setInitialView('ProviderView')
+          setInitialView('ProviderWrapper')
         }
       } catch (err) {
         setInitialView('Guest')
@@ -120,8 +121,9 @@ export const ProfileNavigator = (props) => {
 
   return (
     <Stack.Navigator initialRouteName={initialView} headerMode={false}>
-      <Stack.Screen name="ProfileView" component={ProfileView} />
-      <Stack.Screen name="ProviderView" component={ProviderProfileWrapper} />
+      <Stack.Screen name="ProfileView" component={ClientProfileWrapper} />
+      <Stack.Screen name="ProviderWrapper" component={ProviderProfileWrapper} />
+      <Stack.Screen name="ProviderView" component={ProviderView} />
       <Stack.Screen name="Guest" component={GuestView} />
     </Stack.Navigator>
   )
@@ -135,7 +137,7 @@ const GuestView = (props) => {
   return (
     <Body>
       <TitleContainer>
-        <Title>you're a guest..</Title>
+        <Title>you're a guest...</Title>
       </TitleContainer>
       <ButtonContainer>
         <MainButton android_ripple={{ color: 'white' }} onPress={toSignUp}>
@@ -185,27 +187,123 @@ const ProviderProfileWrapper = (props) => {
   }, [providerId])
 
   if (providerId && providerData) {
-    console.log({
-      data: {
-        ...providerData,
-        bg: 0,
-        img: 0,
-        dist: 0,
-        userType: '3',
-      },
-    })
+    // console.log({
+    //   data: {
+    //     ...providerData,
+    //     bg: 0,
+    //     img: 0,
+    //     dist: 0,
+    //     userType: '3',
+    //   },
+    // })
     props.navigation.navigate('ProviderView', {
       data: {
-        ...providerData,
-        bg: 0,
-        dist: 0,
-        userType: '3',
+        providerData: {
+          ...providerData,
+          providerId: providerData.id,
+          bg: 0,
+          img: 0,
+          dist: 0,
+          userType: '3',
+        },
       },
     })
   }
   return (
     <Body>
-      <ErrorText>Something went wrong! Refresh the app!</ErrorText>
+      {/* <ErrorText>Something went wrong! Refresh the app!</ErrorText> */}
+    </Body>
+  )
+}
+
+const ClientProfileWrapper = (props) => {
+  const [clientId, setClientId] = useState(null)
+  const [clientData, setClientData] = useState(null)
+  const [clientReviews, setClientReviews] = useState(null)
+  const [clientFavorites, setClientFavorites] = useState(null)
+
+  const [getClientData] = useLazyQuery(GET_CLIENT, {
+    variables: {
+      clientId: clientId,
+    },
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (res) => {
+      setClientData(res.client.client)
+    },
+  })
+
+  const [getClientReviews] = useLazyQuery(GET_CLIENT_REVIEWS, {
+    variables: {
+      clientId: clientId,
+    },
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (res) => {
+      setClientReviews(res.clientReviews.reviews)
+    },
+  })
+
+  const [getClientFavorites] = useLazyQuery(GET_CLIENT_FAVORITES, {
+    variables: {
+      clientId: clientId,
+    },
+    onError: (err) => {
+      console.log(err.message)
+    },
+    onCompleted: (res) => {
+      setClientFavorites(res.favorites)
+    },
+  })
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const value = await AsyncStorage.getItem('@client')
+        if (value !== null) {
+          setClientId(Number(value))
+        } else {
+          return
+        }
+      } catch (err) {
+        console.log(err.message)
+      }
+    })()
+  }, [])
+
+  useEffect(() => {
+    getClientData()
+    getClientReviews()
+    getClientFavorites()
+  }, [clientId])
+
+  const logOut = async () => {
+    await AsyncStorage.clear()
+    props.navigation.navigate('SignIn')
+  }
+
+  if (clientId && clientData && clientReviews && clientFavorites) {
+    return (
+      <ProfileView
+        data={{
+          ...clientData,
+          bg: 0,
+          img: 0,
+          dist: 0,
+          userType: '2',
+          reviews: clientReviews,
+          favorites: clientFavorites,
+        }}
+        logOut={logOut}
+      />
+    )
+  }
+
+  return (
+    <Body>
+      {/* <ErrorText>Something went wrong! Refresh the app!</ErrorText> */}
     </Body>
   )
 }

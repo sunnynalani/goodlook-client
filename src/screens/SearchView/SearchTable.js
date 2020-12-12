@@ -11,7 +11,6 @@ import {
 import styles from './styles'
 
 const SearchTable = ({ navigation, data }) => {
-  console.log(data.providers)
   return (
     <List.Section>
       {data.providers.map((provider, index) => (

@@ -53,7 +53,6 @@ export const asProvider = async () => {
 export const getUserType = async () => {
   try {
     const value = await AsyncStorage.getItem('@user')
-    console.log(value)
     if (value !== null) {
       return value
     } else {
