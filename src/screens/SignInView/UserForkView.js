@@ -78,8 +78,6 @@ const MainText = styled.Text`
  */
 
 const UserForkView = ({ navigation }) => {
-  console.log('userfork')
-
   const toClientSignUp = () => {
     navigation.navigate('ClientSignUp')
   }

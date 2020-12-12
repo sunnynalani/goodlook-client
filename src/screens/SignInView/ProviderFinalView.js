@@ -5,6 +5,7 @@ import { useMutation } from '@apollo/client'
 import { REGISTER_PROVIDER } from './queries'
 import styled from 'styled-components/native'
 import { asProvider } from '../../utils'
+import AsyncStorage from '@react-native-community/async-storage'
 
 const Body = styled.View`
   align-items: center;
@@ -171,7 +172,7 @@ const ProviderFinalView = (props) => {
         ;(async () => {
           try {
             await AsyncStorage.clear()
-            await AsyncStorage.setItem('@user', '2')
+            await AsyncStorage.setItem('@user', '3')
             await AsyncStorage.setItem(
               '@provider',
               res.data.registerProvider.provider.id

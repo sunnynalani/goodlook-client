@@ -5,6 +5,7 @@ import { CommonActions } from '@react-navigation/native'
 import { useMutation } from '@apollo/client'
 import { REGISTER_CLIENT } from './queries'
 import styled from 'styled-components/native'
+import AsyncStorage from '@react-native-community/async-storage'
 
 const Body = styled.View`
   align-items: center;
@@ -126,7 +127,7 @@ const ClientFinalView = (props) => {
     )
   }
 
-  const signUp = async (_) => {
+  const signUp = async () => {
     if (email === '' || email.length < 4 || !email.includes('@')) {
       setError(true)
       return
@@ -156,6 +157,7 @@ const ClientFinalView = (props) => {
               res.data.registerClient.client.id
             )
           } catch (error) {
+            console.log(error.message)
             console.error('Unexpected Error')
           }
         })()
@@ -183,7 +185,10 @@ const ClientFinalView = (props) => {
         ></Input>
       </InputContainer>
       <ButtonContainer>
-        <MainButton android_ripple={{ color: 'white' }} onPress={signUp}>
+        <MainButton
+          android_ripple={{ color: 'white' }}
+          onPress={() => signUp()}
+        >
           <MainText>sign up</MainText>
         </MainButton>
       </ButtonContainer>

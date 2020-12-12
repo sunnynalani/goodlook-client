@@ -66,7 +66,6 @@ const SearchView = ({ navigation }) => {
     fetchPolicy: 'network-only',
     onError: (err) => console.log(err.message),
     onCompleted: (res) => {
-      console.log(res)
       setProviderData(res.providers)
     },
   })

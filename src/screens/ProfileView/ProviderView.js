@@ -65,6 +65,7 @@ const InnerMiddleContainer = styled.View`
   background-color: transparent;
   height: 100px;
   justify-content: center;
+  align-items: center;
   width: 41%;
 `
 
@@ -138,19 +139,23 @@ const ButtonText = styled.Text`
 
 const LogoutButton = styled.Pressable`
   background-color: black;
-  height: 22px;
+  height: 52px;
   border-radius: 6px;
+  margin-top: 30px;
+  margin-bottom: 5%;
+  align-items: center;
+  align-self: center;
   justify-content: center;
-  width: 80px;
+  width: 90%;
 `
 
 const LogoutText = styled.Text`
   text-align: center;
   color: white;
-  width: auto;
+  width: 100px;
   margin-bottom: 6px;
   text-align: center;
-  font-size: 12px;
+  font-size: 18px;
   font-family: Comfortaa_500Medium;
 `
 
@@ -226,7 +231,6 @@ const DEFAULT_CLIENT = {
 
 const ProviderView = (props) => {
   const data = props.route.params.data.providerData
-  const [expanded, setExpanded] = useState(true)
   const [visible, setVisible] = useState(false)
   const [rating, setRating] = useState(0)
   const [text, setText] = useState('')
@@ -307,7 +311,8 @@ const ProviderView = (props) => {
 
   const [unfavorite] = useMutation(UNFAVORITE)
 
-  const logout = (_) => {
+  const logout = async () => {
+    await AsyncStorage.clear()
     props.navigation.navigate('SignIn')
   }
 
@@ -385,11 +390,6 @@ const ProviderView = (props) => {
           </LocationText>
         </InnerMiddleContainer>
         <InnerEndContainer>
-          {data.userType === '3' && data.providerId === data.id && (
-            <LogoutButton onPress={logout} android_ripple={{ color: 'white' }}>
-              <LogoutText>log out</LogoutText>
-            </LogoutButton>
-          )}
           <DistanceText>{data.dist}m</DistanceText>
         </InnerEndContainer>
       </CardContainer>
@@ -471,6 +471,16 @@ const ProviderView = (props) => {
           )}
         </List.Accordion>
       </List.Section>
+      {data.userType === '3' && data.providerId === data.id && (
+        <LogoutButton
+          onPress={() => {
+            logout()
+          }}
+          android_ripple={{ color: 'white' }}
+        >
+          <LogoutText>log out</LogoutText>
+        </LogoutButton>
+      )}
       <Portal>
         <Modal
           visible={visible}

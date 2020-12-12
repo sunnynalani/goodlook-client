@@ -132,8 +132,6 @@ const AddressView = (props) => {
     })
   }
 
-  console.log(props)
-  console.log(attributes)
   return (
     <Body behavior={'padding'}>
       <TitleContainer>

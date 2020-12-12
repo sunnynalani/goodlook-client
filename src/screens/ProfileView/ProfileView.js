@@ -39,33 +39,14 @@ const MainText = styled.Text`
   font-family: Comfortaa_500Medium;
 `
 
-const ProfileView = ({ navigation }) => {
-  console.log('rendered')
-  const loggingOut = () => {
-    navigation.navigate('SignIn')
-  }
-
-  const [logout] = useMutation(LOGOUT_CLIENT)
-
-  const handleLogout = async (_) => {
-    await logout().then(
-      (res) => {
-        loggingOut()
-      },
-      (err) => {
-        console.log(err.message)
-        setError(true)
-      }
-    )
-  }
-  const { loading, error, data } = useQuery(ME_CLIENT)
-  if (loading) return <></> //return loading screen todo
-  if (error) return <></> //return error screen todo
+const ProfileView = (props) => {
+  //logOut is the lgoout function
+  const { logOut, data } = props
   console.log(data)
-  console.log(data.meClient.username)
-  var initials = ''
-  initials +=
-    data.meClient.first_name.charAt(0) + data.meClient.last_name.charAt(0)
+
+  // var initials = ''
+  // initials +=
+  //   data.meClient.first_name.charAt(0) + data.meClient.last_name.charAt(0)
   // console.log(initials);
   // console.log(data.meClient.first_name.charAt(0));
   // console.log('this is the id: ' + data.id);
@@ -88,7 +69,7 @@ const ProfileView = ({ navigation }) => {
           flexDirection: 'row',
         }}
       >
-        <Avatar.Text size={90} label={initials} />
+        {/* <Avatar.Text size={90} label={initials} /> */}
         <View
           style={{
             paddingTop: 20,
@@ -99,7 +80,7 @@ const ProfileView = ({ navigation }) => {
         >
           {/* username shown/ CHANGE TO FIRST AND LAST AFTER JOSEPH UPDATES REPO*/}
           <StyledText style={{ color: 'black', fontSize: 22 }}>
-            {data.meClient.first_name} {data.meClient.last_name}
+            {/* {data.meClient.first_name} {data.meClient.last_name} */}
           </StyledText>
           {/* <StyledText style={{paddingLeft: 350,color:'black', fontSize:18}}>Irvine, CA</StyledText> */}
           {/* <View style={{paddingLeft: 0,justifyContent: 'center',flexDirection: 'row'}}>    
@@ -120,7 +101,7 @@ const ProfileView = ({ navigation }) => {
 
       <View style={{ paddingLeft: 0 }}>
         <StyledText style={{ fontSize: 20 }}> Reviews</StyledText>
-        <StyledText> {data.meClient.reviews}</StyledText>
+        {/* <StyledText> {data.meClient.reviews}</StyledText> */}
         <List.Item
           title="Review 1"
           description="customer's review 1"
@@ -131,7 +112,9 @@ const ProfileView = ({ navigation }) => {
         <ButtonContainer>
           <MainButton
             android_ripple={{ color: 'white' }}
-            onPress={handleLogout}
+            onPress={() => {
+              logOut()
+            }}
           >
             <MainText>log out</MainText>
           </MainButton>

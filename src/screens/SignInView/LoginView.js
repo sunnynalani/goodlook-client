@@ -150,7 +150,6 @@ const LoginView = ({ navigation }) => {
         },
       }).then(
         ({ data }) => {
-          console.log(data)
           if (data.loginClient) {
             if (data.loginClient.errors) {
               setError(true)
@@ -171,9 +170,7 @@ const LoginView = ({ navigation }) => {
             }
           }
           if (data.loginProvider) {
-            console.log('yes')
             if (data.loginProvider.errors) {
-              console.log('yes')
               setError(true)
             } else {
               ;(async () => {
@@ -201,7 +198,6 @@ const LoginView = ({ navigation }) => {
   }
 
   const toForgotPswd = () => {
-    console.log('fgort')
     //navigation.navigate('ForgotPassword')
   }
 

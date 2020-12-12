@@ -40,3 +40,49 @@ export const GET_PROVIDER = gql`
     }
   }
 `
+
+export const GET_CLIENT = gql`
+  query getClient($clientId: Float!) {
+    client(clientId: $clientId) {
+      errors {
+        field
+        message
+      }
+      client {
+        id
+        email
+        username
+        first_name
+        last_name
+      }
+    }
+  }
+`
+
+export const GET_CLIENT_REVIEWS = gql`
+  query getClientReviews($clientId: Float!) {
+    clientReviews(clientId: $clientId) {
+      errors {
+        field
+        message
+      }
+      reviews {
+        provider {
+          id
+          name
+        }
+        rating
+        text
+      }
+    }
+  }
+`
+
+export const GET_CLIENT_FAVORITES = gql`
+  query getClientFavorites($clientId: Float!) {
+    favorites(clientId: $clientId) {
+      id
+      name
+    }
+  }
+`
