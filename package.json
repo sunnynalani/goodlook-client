@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@apollo/client": "^3.2.5",
-    "@apollo/react-hooks": "^4.0.0",
     "@expo-google-fonts/comfortaa": "^0.1.0",
     "@expo-google-fonts/inter": "^0.1.0",
     "@expo/vector-icons": "^10.2.1",

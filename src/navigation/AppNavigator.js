@@ -2,7 +2,7 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { MainNavigator } from './MainNavigator'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { ME } from './queries'
 import {
   SignInView,
@@ -23,6 +23,9 @@ import { asClient, asProvider } from '../utils'
 const Stack = createStackNavigator()
 
 const StackNavigation = () => {
+  /**
+   * The intent of using the ME query here was to
+   */
   const { loading, error, data } = useQuery(ME)
   if (loading) return <></> //return loading screen todo
   if (error) return <></> //return error screen todo
