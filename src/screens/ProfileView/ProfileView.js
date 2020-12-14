@@ -2,9 +2,6 @@ import React from 'react'
 import { StyleSheet, Text, View, Button, FlatList } from 'react-native'
 import { Avatar, List } from 'react-native-paper'
 import styled from 'styled-components/native'
-import { useMutation, useQuery } from '@apollo/client'
-import { LOGOUT_CLIENT, ME_CLIENT } from './queries'
-import { ScrollView } from 'react-native-gesture-handler'
 import v0_42 from '../../components/assests/images/v0_42.png'
 
 const Body = styled.ScrollView`
@@ -93,6 +90,7 @@ const ProfileView = (props) => {
   const { logOut, data } = props
   var initials = ''
   initials += data.first_name.charAt(0) + data.last_name.charAt(0)
+
   return (
     <Body>
       <CardContainer>
@@ -112,7 +110,9 @@ const ProfileView = (props) => {
           Favorites
         </StyledText>
         <List.Accordion
-          title="Providers"
+          title={`${data.favorites.length} ${
+            data.favorites.length === 1 ? 'Favorite' : 'Favorites'
+          }`}
           left={(props) => <List.Icon {...props} icon="star" />}
         >
           {data.favorites.map((reviews, index) => {
@@ -120,6 +120,9 @@ const ProfileView = (props) => {
               <List.Item title="Name" key={index} description={reviews.name} />
             )
           })}
+          {data.favorites.length === 0 && (
+            <List.Item description={'This establishment has no favorites'} />
+          )}
         </List.Accordion>
 
         <StyledText style={{ fontSize: 20, paddingLeft: 0 }}>
@@ -127,7 +130,9 @@ const ProfileView = (props) => {
           Reviews
         </StyledText>
         <List.Accordion
-          title="Reviews"
+          title={`${data.reviews.length} ${
+            data.reviews.length === 1 ? 'Review' : 'Reviews'
+          }`}
           left={(props) => <List.Icon {...props} icon="file" />}
         >
           {data.reviews.map((reviews, index) => {
@@ -139,6 +144,9 @@ const ProfileView = (props) => {
               />
             )
           })}
+          {data.reviews.length === 0 && (
+            <List.Item description={'This establishment has no reviews'} />
+          )}
         </List.Accordion>
       </List.Section>
       <View>
