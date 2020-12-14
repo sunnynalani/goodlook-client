@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage'
+import { Platform } from 'react-native'
 
 /**
  *
@@ -23,7 +24,7 @@ import AsyncStorage from '@react-native-community/async-storage'
 
 export const asGuest = async (navigation) => {
   try {
-    await AsyncStorage.clear()
+    await removeAllKeys()
     await AsyncStorage.setItem('@user', '1')
     navigation.navigate('Main')
   } catch (error) {
@@ -34,7 +35,7 @@ export const asGuest = async (navigation) => {
 
 export const asClient = async () => {
   try {
-    await AsyncStorage.clear()
+    await removeAllKeys()
     await AsyncStorage.setItem('@user', '2')
   } catch (error) {
     console.error('Unexpected Error')
@@ -43,7 +44,7 @@ export const asClient = async () => {
 
 export const asProvider = async () => {
   try {
-    await AsyncStorage.clear()
+    await removeAllKeys()
     await AsyncStorage.setItem('@user', '3')
   } catch (error) {
     console.error('Unexpected Error')
@@ -61,5 +62,14 @@ export const getUserType = async () => {
   } catch (err) {
     console.log(err.message)
     return '0'
+  }
+}
+
+export const removeAllKeys = async () => {
+  const allKeys = await AsyncStorage.getAllKeys()
+  if (Platform.OS === 'ios') {
+    await AsyncStorage.multiRemove(allKeys)
+  } else if (Platform.OS === 'android') {
+    await AsyncStorage.clear()
   }
 }

@@ -11,7 +11,7 @@ import {
 } from './queries'
 import styled from 'styled-components/native'
 import { useLazyQuery } from '@apollo/client'
-import { bgImages, avatarImages } from '../utils'
+import { bgImages, removeAllKeys, avatarImages } from '../utils'
 
 const Body = styled.View`
   align-items: center;
@@ -159,6 +159,7 @@ const ProviderProfileWrapper = (props) => {
     variables: {
       providerId: providerId,
     },
+    fetchPolicy: 'network-only',
     onError: (err) => {
       console.log(err.message)
     },
@@ -187,15 +188,6 @@ const ProviderProfileWrapper = (props) => {
   }, [providerId])
 
   if (providerId && providerData) {
-    // console.log({
-    //   data: {
-    //     ...providerData,
-    //     bg: 0,
-    //     img: 0,
-    //     dist: 0,
-    //     userType: '3',
-    //   },
-    // })
     props.navigation.navigate('ProviderView', {
       data: {
         providerData: {
@@ -226,6 +218,7 @@ const ClientProfileWrapper = (props) => {
     variables: {
       clientId: clientId,
     },
+    fetchPolicy: 'network-only',
     onError: (err) => {
       console.log(err.message)
     },
@@ -238,6 +231,7 @@ const ClientProfileWrapper = (props) => {
     variables: {
       clientId: clientId,
     },
+    fetchPolicy: 'network-only',
     onError: (err) => {
       console.log(err.message)
     },
@@ -250,6 +244,7 @@ const ClientProfileWrapper = (props) => {
     variables: {
       clientId: clientId,
     },
+    fetchPolicy: 'network-only',
     onError: (err) => {
       console.log(err.message)
     },
@@ -280,7 +275,7 @@ const ClientProfileWrapper = (props) => {
   }, [clientId])
 
   const logOut = async () => {
-    await AsyncStorage.clear()
+    await removeAllKeys()
     props.navigation.navigate('SignIn')
   }
 

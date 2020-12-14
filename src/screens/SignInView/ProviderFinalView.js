@@ -4,7 +4,7 @@ import { CommonActions } from '@react-navigation/native'
 import { useMutation } from '@apollo/client'
 import { REGISTER_PROVIDER } from './queries'
 import styled from 'styled-components/native'
-import { asProvider } from '../../utils'
+import { removeAllKeys } from '../../utils'
 import AsyncStorage from '@react-native-community/async-storage'
 
 const Body = styled.View`
@@ -171,7 +171,7 @@ const ProviderFinalView = (props) => {
       (res) => {
         ;(async () => {
           try {
-            await AsyncStorage.clear()
+            await removeAllKeys()
             await AsyncStorage.setItem('@user', '3')
             await AsyncStorage.setItem(
               '@provider',

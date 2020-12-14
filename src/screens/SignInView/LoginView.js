@@ -10,7 +10,7 @@ import { CommonActions } from '@react-navigation/native'
 import { useMutation } from '@apollo/client'
 import { LOGIN } from './queries'
 import styled from 'styled-components/native'
-import { asClient, asProvider } from '../../utils'
+import { removeAllKeys } from '../../utils'
 import AsyncStorage from '@react-native-community/async-storage'
 
 const Body = styled.View`
@@ -118,10 +118,6 @@ const LoginView = ({ navigation }) => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
 
-  const verifyResponse = async (res) => {
-    await asClient()
-  }
-
   /**
    * Resets navigation with the specified path history
    * This is so that the user does not back to this page
@@ -156,7 +152,7 @@ const LoginView = ({ navigation }) => {
             } else {
               ;(async () => {
                 try {
-                  await AsyncStorage.clear()
+                  await removeAllKeys()
                   await AsyncStorage.setItem('@user', '2')
                   await AsyncStorage.setItem(
                     '@client',
@@ -175,7 +171,7 @@ const LoginView = ({ navigation }) => {
             } else {
               ;(async () => {
                 try {
-                  await AsyncStorage.clear()
+                  await removeAllKeys()
                   await AsyncStorage.setItem('@user', '3')
                   await AsyncStorage.setItem(
                     '@provider',

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components/native'
-import { asGuest } from '../../utils'
+import { asGuest, removeAllKeys } from '../../utils'
 import v0_42 from '../../components/assests/images/v0_42.png'
 import AsyncStorage from '@react-native-community/async-storage'
 
@@ -109,7 +109,7 @@ const ButtonText = styled.Text`
 const SignInView = ({ navigation }) => {
   const clearStorage = async () => {
     try {
-      await AsyncStorage.clear()
+      await removeAllKeys()
     } catch (error) {
       console.error('Unexpected Error')
     }

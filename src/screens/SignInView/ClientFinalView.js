@@ -6,6 +6,7 @@ import { useMutation } from '@apollo/client'
 import { REGISTER_CLIENT } from './queries'
 import styled from 'styled-components/native'
 import AsyncStorage from '@react-native-community/async-storage'
+import { removeAllKeys } from '../../utils'
 
 const Body = styled.View`
   align-items: center;
@@ -150,7 +151,7 @@ const ClientFinalView = (props) => {
       (res) => {
         ;(async () => {
           try {
-            await AsyncStorage.clear()
+            await removeAllKeys()
             await AsyncStorage.setItem('@user', '2')
             await AsyncStorage.setItem(
               '@client',

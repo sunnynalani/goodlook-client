@@ -169,7 +169,7 @@ const CATEGORIES_MAP = {
  * currently uses stock photos for these img bgs
  */
 
-const ListView = ({ navigation, providerData, location, userType }) => {
+const ListView = ({ navigation, providerData, location }) => {
   const toProviderPage = (providerData) => {
     navigation.navigate('ProviderView', {
       data: providerData,
@@ -187,7 +187,6 @@ const ListView = ({ navigation, providerData, location, userType }) => {
             <ProviderCard
               key={index}
               index={index}
-              userType={userType}
               data={provider}
               img={bgImages[index]}
               toProviderPage={toProviderPage}
@@ -200,7 +199,7 @@ const ListView = ({ navigation, providerData, location, userType }) => {
 }
 
 const ProviderCard = React.memo(
-  ({ data, img, index, userType, toProviderPage, location }) => {
+  ({ data, img, index, toProviderPage, location }) => {
     const dist = distance(
       location.latitude,
       location.longitude,
@@ -218,7 +217,6 @@ const ProviderCard = React.memo(
               img: index,
               bg: img,
               dist: dist,
-              userType: userType,
             },
           })
         }

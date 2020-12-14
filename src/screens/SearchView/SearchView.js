@@ -141,7 +141,6 @@ const SearchView = ({ navigation }) => {
   const [viewState, setViewState] = useState(false) //terrible way to do this
   const [location, setLocation] = useState(null)
   const [lockOverlay, setLockOverlay] = useState(false)
-  const [userType, setUserType] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchInput, setSearchInput] = useState(null)
   const [within, setWithin] = useState(null)
@@ -176,17 +175,6 @@ const SearchView = ({ navigation }) => {
   useEffect(() => {
     ;(async () => {
       const { status } = await Location.requestPermissionsAsync()
-      try {
-        const value = await AsyncStorage.getItem('@user')
-        if (value !== null) {
-          setUserType(value)
-        } else {
-          setUserType('1')
-        }
-      } catch (err) {
-        console.log(err.message)
-        setUserType('1')
-      }
       if (status !== 'granted') {
         setLockOverlay(true)
       } else {
@@ -478,7 +466,6 @@ const SearchView = ({ navigation }) => {
       ) : (
         <ListView
           navigation={navigation}
-          userType={userType}
           providerData={providerData}
           location={location}
         />

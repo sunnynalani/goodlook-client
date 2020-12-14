@@ -6,7 +6,7 @@ import * as Location from 'expo-location'
 import Slider from '@react-native-community/slider'
 import { List } from 'react-native-paper'
 import styled from 'styled-components/native'
-import { bgImages, avatarImages, getUserType } from '../../utils'
+import { bgImages, avatarImages, removeAllKeys } from '../../utils'
 import { Modal, TextInput } from 'react-native-paper'
 import {
   CREATE_REVIEW,
@@ -231,6 +231,7 @@ const DEFAULT_CLIENT = {
 
 const ProviderView = (props) => {
   const data = props.route.params.data.providerData
+  const [userType, setUserType] = useState(null)
   const [visible, setVisible] = useState(false)
   const [rating, setRating] = useState(0)
   const [text, setText] = useState('')
@@ -312,13 +313,15 @@ const ProviderView = (props) => {
   const [unfavorite] = useMutation(UNFAVORITE)
 
   const logout = async () => {
-    await AsyncStorage.clear()
+    await removeAllKeys()
     props.navigation.navigate('SignIn')
   }
 
   useEffect(() => {
     ;(async () => {
-      if (data.userType === '2') {
+      const userType = await AsyncStorage.getItem('@user')
+      setUserType(userType)
+      if (userType === '2') {
         try {
           const value = await AsyncStorage.getItem('@client')
           if (value !== null) {
@@ -393,7 +396,7 @@ const ProviderView = (props) => {
           <DistanceText>{data.dist}m</DistanceText>
         </InnerEndContainer>
       </CardContainer>
-      {data.userType === '2' && (
+      {userType === '2' && (
         <ButtonContainer>
           <HeaderButton
             style={{ borderRightWidth: 0 }}
@@ -471,7 +474,7 @@ const ProviderView = (props) => {
           )}
         </List.Accordion>
       </List.Section>
-      {data.userType === '3' && data.providerId === data.id && (
+      {userType === '3' && data.providerId === data.id && (
         <LogoutButton
           onPress={() => {
             logout()
