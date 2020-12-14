@@ -4,11 +4,63 @@ import { Avatar, List } from 'react-native-paper'
 import styled from 'styled-components/native'
 import { useMutation, useQuery } from '@apollo/client'
 import { LOGOUT_CLIENT, ME_CLIENT } from './queries'
+import { ScrollView } from 'react-native-gesture-handler'
+import v0_42 from '../../components/assests/images/v0_42.png'
+
+const Body = styled.ScrollView`
+  background-color: white;
+  height: auto;
+  width: 100%;
+`
+const TitleText = styled.Text`
+  color: black;
+  width: auto;
+  font-size: 30px;
+  font-family: Comfortaa_700Bold;
+`
+
+const ImageEndBackground = styled.Image`
+  background-color: transparent;
+  height: 100%;
+  right: 0px;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+`
+
+const CardContainer = styled.View`
+  background-color: white;
+  margin-top: 40px;
+  height: 110px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-direction: row;
+  border-bottom-width: 0.5px;
+  border-bottom-color: #d3d3d3;
+  overflow: hidden;
+`
+
+const InnerContainer = styled.View`
+  background-color: transparent;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  paddingright: 100;
+`
+
+const InnerMiddleContainer = styled.View`
+  background-color: transparent;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  width: 41%;
+`
 
 const StyledText = styled.Text`
   text-align: center;
   color: black;
-  width: 100px;
   font-size: 25px;
   margin-bottom: 6px;
   font-family: Comfortaa_500Medium;
@@ -42,72 +94,56 @@ const MainText = styled.Text`
 const ProfileView = (props) => {
   //logOut is the lgoout function
   const { logOut, data } = props
-  console.log(data)
-
-  // var initials = ''
-  // initials +=
-  //   data.meClient.first_name.charAt(0) + data.meClient.last_name.charAt(0)
-  // console.log(initials);
-  // console.log(data.meClient.first_name.charAt(0));
-  // console.log('this is the id: ' + data.id);
-  // console.log('this is the username: ' + data.self.username);
-
+  var initials = ''
+  initials += data.first_name.charAt(0) + data.last_name.charAt(0)
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        alignContent: 'flex-start',
-      }}
-    >
-      <View
-        style={{
-          paddingTop: 20,
-          paddingLeft: 5,
-          justifyContent: 'space-evenly',
-          flexDirection: 'row',
-        }}
-      >
-        {/* <Avatar.Text size={90} label={initials} /> */}
-        <View
-          style={{
-            paddingTop: 20,
-            paddingLeft: 50,
-            flex: 1,
-            flexDirection: 'column',
-          }}
-        >
-          {/* username shown/ CHANGE TO FIRST AND LAST AFTER JOSEPH UPDATES REPO*/}
-          <StyledText style={{ color: 'black', fontSize: 22 }}>
-            {/* {data.meClient.first_name} {data.meClient.last_name} */}
-          </StyledText>
-          {/* <StyledText style={{paddingLeft: 350,color:'black', fontSize:18}}>Irvine, CA</StyledText> */}
-          {/* <View style={{paddingLeft: 0,justifyContent: 'center',flexDirection: 'row'}}>    
-      <StyledText style={{paddingLeft: 10,color:'black', fontSize:18}}>Followers</StyledText>
-      <StyledText style={{paddingLeft: 10,color:'black', fontSize:18}}>Following</StyledText>
-      </View> */}
-        </View>
-      </View>
+    <Body>
+      <CardContainer>
+        <ImageEndBackground source={v0_42} />
+        <InnerContainer>
+          <Avatar.Text label={initials} />
+        </InnerContainer>
+        <InnerMiddleContainer>
+          <TitleText numberOfLines={1}>
+            {data.first_name} {data.last_name}
+          </TitleText>
+        </InnerMiddleContainer>
+      </CardContainer>
 
-      <View style={{ paddingLeft: 7 }}>
-        <StyledText style={{ fontSize: 20 }}>Favorites</StyledText>
-        <List.Item
-          title="Business #1"
-          description="business profile"
+      <List.Section style={{ paddingLeft: 0 }}>
+        <StyledText style={{ fontSize: 20, paddingLeft: 0 }}>
+          Favorites
+        </StyledText>
+        <List.Accordion
+          title="Providers"
           left={(props) => <List.Icon {...props} icon="star" />}
-        />
-      </View>
+        >
+          {data.favorites.map((reviews, index) => {
+            return (
+              <List.Item title="Name" key={index} description={reviews.name} />
+            )
+          })}
+        </List.Accordion>
 
-      <View style={{ paddingLeft: 0 }}>
-        <StyledText style={{ fontSize: 20 }}> Reviews</StyledText>
-        {/* <StyledText> {data.meClient.reviews}</StyledText> */}
-        <List.Item
-          title="Review 1"
-          description="customer's review 1"
-          left={(props) => <List.Icon {...props} icon="folder" />}
-        />
-      </View>
+        <StyledText style={{ fontSize: 20, paddingLeft: 0 }}>
+          {' '}
+          Reviews
+        </StyledText>
+        <List.Accordion
+          title="Reviews"
+          left={(props) => <List.Icon {...props} icon="file" />}
+        >
+          {data.reviews.map((reviews, index) => {
+            return (
+              <List.Item
+                title="Comment"
+                key={index}
+                description={reviews.text}
+              />
+            )
+          })}
+        </List.Accordion>
+      </List.Section>
       <View>
         <ButtonContainer>
           <MainButton
@@ -120,7 +156,7 @@ const ProfileView = (props) => {
           </MainButton>
         </ButtonContainer>
       </View>
-    </View>
+    </Body>
   )
 }
 
