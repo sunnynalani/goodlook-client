@@ -105,6 +105,7 @@ const TitleText = styled.Text`
 const LocationText = styled.Text`
   color: gray;
   width: auto;
+  height: auto;
   font-size: 15px;
   margin-bottom: 8%;
   font-family: Comfortaa_700Bold;
@@ -387,13 +388,13 @@ const ProviderView = (props) => {
             {data.name ? data.name : 'Unlisted'}
           </TitleText>
           <LocationText numberOfLines={1}>
-            {data.city && data.state
-              ? `${data.city}, ${data.state}`
-              : 'Unlisted'}
+            {data.city && data.state ? `${data.city}, ${data.state}` : ''}
           </LocationText>
         </InnerMiddleContainer>
         <InnerEndContainer>
-          <DistanceText>{data.dist}m</DistanceText>
+          {data.providerId !== data.id && (
+            <DistanceText>{data.dist}m</DistanceText>
+          )}
         </InnerEndContainer>
       </CardContainer>
       {userType === '2' && (

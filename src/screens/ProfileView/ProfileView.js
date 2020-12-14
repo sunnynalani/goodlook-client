@@ -32,8 +32,6 @@ const CardContainer = styled.View`
   background-color: white;
   margin-top: 40px;
   height: 110px;
-  align-items: center;
-  justify-content: center;
   width: 100%;
   flex-direction: row;
   border-bottom-width: 0.5px;
@@ -47,15 +45,14 @@ const InnerContainer = styled.View`
   align-items: center;
   justify-content: center;
   width: 30%;
-  paddingright: 100;
 `
 
 const InnerMiddleContainer = styled.View`
   background-color: transparent;
   height: 100px;
-  justify-content: center;
+  width: auto;
   align-items: center;
-  width: 41%;
+  justify-content: center;
 `
 
 const StyledText = styled.Text`
