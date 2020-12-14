@@ -11,7 +11,7 @@ import {
 } from './queries'
 import styled from 'styled-components/native'
 import { useLazyQuery } from '@apollo/client'
-import { bgImages, removeAllKeys, avatarImages } from '../utils'
+import { removeAllKeys } from '../utils'
 
 const Body = styled.View`
   align-items: center;
@@ -67,14 +67,6 @@ const MainText = styled.Text`
   text-align: center;
   font-size: 18px;
   font-family: Comfortaa_500Medium;
-`
-
-const ErrorText = styled.Text`
-  color: red;
-  height: auto;
-  font-size: 12px;
-  font-family: Comfortaa_500Medium;
-  margin-bottom: 20px;
 `
 
 const TermsContainer = styled.View`
@@ -213,6 +205,7 @@ const ClientProfileWrapper = (props) => {
   const [clientData, setClientData] = useState(null)
   const [clientReviews, setClientReviews] = useState(null)
   const [clientFavorites, setClientFavorites] = useState(null)
+  const isFocused = useIsFocused()
 
   const [getClientData] = useLazyQuery(GET_CLIENT, {
     variables: {
