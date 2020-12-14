@@ -73,7 +73,7 @@ const Terms = styled.Text`
   font-family: Comfortaa_500Medium;
 `
 
-const NotificationView = (prop) => {
+const NotificationView = (props) => {
   const toSignUp = (_) => {
     props.navigation.navigate('SignIn')
   }
